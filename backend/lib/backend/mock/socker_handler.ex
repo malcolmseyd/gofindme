@@ -1,0 +1,79 @@
+defmodule Backend.Mock.SocketHandler do
+  require Logger
+  require Jason.Helpers
+  import Jason.Helpers, only: [json_map: 1]
+
+  # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket
+  @behaviour :cowboy_websocket
+
+  @impl true
+  def init(request, state) do
+    {:cowboy_websocket, request, state}
+  end
+
+  @impl true
+  def websocket_init(state) do
+    send(self(), :mock_location)
+    ticker_ref = :timer.send_interval(1000, :mock_location)
+
+    state = state |> Map.put(:ticker_ref, ticker_ref)
+
+    {:ok, state}
+  end
+
+  def websocket_handle({:text, text}, state) do
+    with {:ok, json} <- Jason.decode(text) do
+      IO.inspect(json)
+      {:ok, state}
+    else
+      {:error, %Jason.DecodeError{position: pos}} ->
+        json_map(error: "Error parsing JSON at position #{pos}")
+        |> Jason.encode!()
+        |> reply_text(state)
+    end
+  end
+
+  @impl true
+  def websocket_handle(_, state) do
+    {:ok, state}
+  end
+
+  def websocket_info(:mock_location, state) do
+    {lat, long} = mock_coords()
+
+    json_map(type: "location_update", lat: lat, long: long)
+    |> Jason.encode!()
+    |> reply_text(state)
+  end
+
+  @impl true
+  def websocket_info(_, state) do
+    {:ok, state}
+  end
+
+  @impl true
+  def terminate(reason, _partial_req, state) do
+    case reason do
+      :normal ->
+        :ok
+
+      _ ->
+        Logger.info(%{websocket_terminated: reason})
+    end
+
+    %{ticker_ref: ticker_ref} = state
+    :timer.cancel(ticker_ref)
+    :ok
+  end
+
+  def mock_coords() do
+    {lat, long} = {48.463987, -123.303246}
+    lat = lat + (:rand.uniform() - 0.5) * 0.01
+    long = long + (:rand.uniform() - 0.5) * 0.01
+    {lat, long}
+  end
+
+  def reply_text(text, state) do
+    {:reply, {:text, text}, state}
+  end
+end
