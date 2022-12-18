@@ -1,7 +1,6 @@
 FROM elixir:1.14-alpine as builder
 
-COPY mix.exs mix.lock /app/
-COPY lib/ /app/lib/
+COPY . /app/
 
 WORKDIR /app
 
