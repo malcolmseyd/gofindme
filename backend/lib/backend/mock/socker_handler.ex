@@ -13,6 +13,13 @@ defmodule Backend.Mock.SocketHandler do
 
   @impl true
   def websocket_init(state) do
+    # assign the logger metadata from the Plug process
+    state
+    |> Map.get(:logger_metadata)
+    |> Logger.metadata()
+
+    Logger.debug("new websocket connection")
+
     send(self(), :mock_location)
     ticker_ref = :timer.send_interval(1000, :mock_location)
 
@@ -34,7 +41,8 @@ defmodule Backend.Mock.SocketHandler do
   end
 
   @impl true
-  def websocket_handle(_, state) do
+  def websocket_handle(frame, state) do
+    Logger.debug(unhandled_websocket_frame: frame)
     {:ok, state}
   end
 
@@ -47,7 +55,8 @@ defmodule Backend.Mock.SocketHandler do
   end
 
   @impl true
-  def websocket_info(_, state) do
+  def websocket_info(info, state) do
+    Logger.debug(unhandled_websocket_info: info)
     {:ok, state}
   end
 
@@ -58,7 +67,7 @@ defmodule Backend.Mock.SocketHandler do
         :ok
 
       _ ->
-        Logger.info(%{websocket_terminated: reason})
+        Logger.debug(websocket_terminated: reason)
     end
 
     %{ticker_ref: ticker_ref} = state

@@ -6,7 +6,10 @@ defmodule Backend.Mock.Socket do
   end
 
   def call(conn, _opts) do
-    handler_opts = %{}
+    handler_opts = %{
+      # move logger metadata across process boundaries
+      logger_metadata: Logger.metadata()
+    }
 
     # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/#_opts
     conn_opts = %{compress: true}
