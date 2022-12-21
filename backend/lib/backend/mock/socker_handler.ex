@@ -6,12 +6,12 @@ defmodule Backend.Mock.SocketHandler do
   # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket
   @behaviour :cowboy_websocket
 
-  @impl true
+  @impl :cowboy_websocket
   def init(request, state) do
     {:cowboy_websocket, request, state}
   end
 
-  @impl true
+  @impl :cowboy_websocket
   def websocket_init(state) do
     # assign the logger metadata from the Plug process
     state
@@ -30,17 +30,15 @@ defmodule Backend.Mock.SocketHandler do
 
   def websocket_handle({:text, text}, state) do
     with {:ok, json} <- Jason.decode(text) do
-      IO.inspect(json)
-      {:ok, state}
+      handle_msg(json, state)
     else
       {:error, %Jason.DecodeError{position: pos}} ->
         json_map(error: "Error parsing JSON at position #{pos}")
-        |> Jason.encode!()
-        |> reply_text(state)
+        |> reply_json(state)
     end
   end
 
-  @impl true
+  @impl :cowboy_websocket
   def websocket_handle(frame, state) do
     Logger.debug(unhandled_websocket_frame: frame)
     {:ok, state}
@@ -50,17 +48,16 @@ defmodule Backend.Mock.SocketHandler do
     {lat, long} = mock_coords()
 
     json_map(type: "location_update", lat: lat, long: long)
-    |> Jason.encode!()
-    |> reply_text(state)
+    |> reply_json(state)
   end
 
-  @impl true
+  @impl :cowboy_websocket
   def websocket_info(info, state) do
     Logger.debug(unhandled_websocket_info: info)
     {:ok, state}
   end
 
-  @impl true
+  @impl :cowboy_websocket
   def terminate(reason, _partial_req, state) do
     case reason do
       :normal ->
@@ -75,14 +72,43 @@ defmodule Backend.Mock.SocketHandler do
     :ok
   end
 
-  def mock_coords() do
+  defp mock_coords() do
     {lat, long} = {48.463987, -123.303246}
     lat = lat + (:rand.uniform() - 0.5) * 0.01
     long = long + (:rand.uniform() - 0.5) * 0.01
     {lat, long}
   end
 
-  def reply_text(text, state) do
+  defp reply_text(text, state) do
     {:reply, {:text, text}, state}
+  end
+
+  defp reply_json(map, state) do
+    map
+    |> Jason.encode!()
+    |> reply_text(state)
+  end
+
+  defp handle_msg(%{"type" => "chat", "msg" => msg}, state) do
+    # respond with a timestamped echo
+    now = DateTime.utc_now()
+
+    json_map(type: "chat", msg: msg, sent: now)
+    |> reply_json(state)
+  end
+
+  defp handle_msg(%{"type" => "keep_alive"}, state) do
+    Logger.debug(msg: "keep_alive")
+    {:ok, state}
+  end
+
+  defp handle_msg(%{"type" => "location_update", "lat" => lat, "long" => long}, state) do
+    Logger.debug(msg: "location_update", lat: lat, long: long)
+    {:ok, state}
+  end
+
+  defp handle_msg(msg, state) do
+    Logger.debug(unhandled_msg: msg)
+    {:ok, state}
   end
 end
