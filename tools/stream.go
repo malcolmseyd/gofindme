@@ -84,7 +84,7 @@ func main() {
 	err := http.ListenAndServe(host, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// super basic auth
 		q := r.URL.Query().Get("password")
-		if subtle.ConstantTimeCompare([]byte(q), []byte(password)) != 0 {
+		if subtle.ConstantTimeCompare([]byte(q), []byte(password)) != 1 {
 			w.WriteHeader(http.StatusUnauthorized)
 			io.WriteString(w, "unauthorized")
 			return
