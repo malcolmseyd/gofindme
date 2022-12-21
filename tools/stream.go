@@ -38,7 +38,7 @@ func main() {
 		clients := make(map[chan []byte]struct{})
 		for {
 		RecvLoop:
-			// receive all messages and block until we have clients
+			// receive all messages
 			for {
 				select {
 				case clientChan := <-addStream:
@@ -49,11 +49,12 @@ func main() {
 					close(clientChan)
 
 				default:
+					// this this essentially discards stdin if no clients
 					if len(clients) != 0 {
-						break RecvLoop
+						// we don't want to busy wait
+						time.Sleep(time.Millisecond * 20)
 					}
-					// we don't want to busy wait
-					time.Sleep(time.Millisecond * 20)
+					break RecvLoop
 				}
 
 			}
