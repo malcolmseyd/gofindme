@@ -30,8 +30,8 @@ func main() {
 	log.Printf("listening at http://%s/?password=%s", host, password)
 
 	// our interface to stdin
-	add_stream := make(chan chan []byte, 16)
-	remove_stream := make(chan chan []byte, 16)
+	addStream := make(chan chan []byte, 16)
+	removeStream := make(chan chan []byte, 16)
 
 	// fan out stdin to all clients
 	go func() {
@@ -41,10 +41,10 @@ func main() {
 			// receive all messages and block until we have clients
 			for {
 				select {
-				case clientChan := <-add_stream:
+				case clientChan := <-addStream:
 					clients[clientChan] = struct{}{}
 
-				case clientChan := <-remove_stream:
+				case clientChan := <-removeStream:
 					delete(clients, clientChan)
 					close(clientChan)
 
@@ -103,7 +103,7 @@ func main() {
 
 		// connect to stdin
 		stream := make(chan []byte, 1)
-		add_stream <- stream
+		addStream <- stream
 
 		// feed stdin stream chunks into the HTTP response
 		for {
@@ -117,7 +117,7 @@ func main() {
 			}
 			if err != nil {
 				log.Println("failed to write:", err)
-				remove_stream <- stream
+				removeStream <- stream
 				return
 			}
 			// flush so the client gets data ASAP
