@@ -22,7 +22,8 @@
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
     "react-native-web": "~0.18.9",
-    "react-use-websocket": "^4.2.0"
+    "react-use-websocket": "^4.2.0",
+    "undefined": "@expo/vector-icons/MaterialCommunityIcons"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

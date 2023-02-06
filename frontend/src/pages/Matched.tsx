@@ -1,17 +1,34 @@
-import { Box, Button, Stack, TextInput } from "@react-native-material/core";
+import { Box, Icon, IconButton, Stack } from "@react-native-material/core";
 import React from "react";
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from "react-native";
 import Map from "../components/Map";
 import { BasicLocation } from "../common/BasicLocation";
 import useWebSocket from "react-use-websocket";
 
 const MOCK_DEV_SERVER = "wss://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/socket";
-const LAPTOP_DEV_SERVER = "https://ujdjcdriw6p46igejapojk5bqa.srv.us/";
+const LAPTOP_DEV_SERVER =
+  "https://ujdjcdriw6p46igejapojk5bqa.srv.us/mock/socket";
 
-interface LocationUpdate {
+interface BaseUpdate {
   type: string;
+}
+
+interface LocationUpdate extends BaseUpdate {
   lat: number;
   long: number;
+}
+
+interface ChatUpdate extends BaseUpdate {
+  msg: string;
+  timestamp: string;
 }
 
 interface ChatMessage {
@@ -19,7 +36,7 @@ interface ChatMessage {
   message: string;
 }
 
-type Message = LocationUpdate | any;
+type Message = LocationUpdate | ChatUpdate | any;
 
 const locationUpdate = true;
 
@@ -39,22 +56,29 @@ export default function Matched() {
     lastJsonMessage,
     readyState,
     getWebSocket,
-  } = useWebSocket("wss://ujdjcdriw6p46igejapojk5bqa.srv.us/mock/socket", {
+  } = useWebSocket(MOCK_DEV_SERVER, {
     onOpen: () => console.log("opened"),
     shouldReconnect: (closeEvent) => true,
     onMessage: (e) => {
       // message received
       let data: Message = JSON.parse(e.data);
+      console.log(data);
       if (data.type === "location_update") {
         setOtherLocation({
           latitude: data.lat,
           longitude: data.long,
         });
+        // chatMessages.push({
+        //   sender: "system",
+        //   message: data.lat + ", " + data.long,
+        // });
+        // setChatMessages(chatMessages);
+      } else if (data.type === "chat") {
         setChatMessages([
           ...chatMessages,
           {
-            sender: "system",
-            message: data.lat + ", " + data.long,
+            sender: "Friend",
+            message: data.msg,
           },
         ]);
       } else {
@@ -78,9 +102,33 @@ export default function Matched() {
     );
   };
 
+  const sendChatMessage = () => {
+    console.log("sending message: " + chatbox);
+    sendMessage(
+      JSON.stringify({
+        type: "chat",
+        msg: chatbox,
+      })
+    );
+    setChatMessages([
+      ...chatMessages,
+      {
+        sender: "You",
+        message: chatbox,
+      },
+    ]);
+    setChatbox("");
+    console.log("chatbox: " + chatbox);
+  };
+
   const renderChatItem = (e: any) => (
-    <Text style={styles.message}>
-      {e.item.sender}: {e.item.message}
+    <Text>
+      <Text
+        style={e.item.sender === "You" ? { color: "blue" } : { color: "red" }}
+      >
+        {e.item.sender}
+      </Text>
+      : {e.item.message}
     </Text>
   );
 
@@ -100,27 +148,38 @@ export default function Matched() {
           }}
         />
       </View>
-      <Stack direction="row" style={styles.chatSendContainer}>
-        <TextInput
-          style={styles.textInput}
-          label="Send a message"
-          variant="outlined"
-          onChangeText={(value) => {
-            setChatbox(value);
-          }}
-          onSubmitEditing={(e) => {
-            // same as submit button pressed
-          }}
-        >
-          {chatbox}
-        </TextInput>
-        <Button
-          style={styles.textSend}
-          title="Send"
-          variant="contained"
-          onTouchEnd={(e) => {}}
-        ></Button>
-      </Stack>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{
+          alignItems: "center",
+        }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <Stack direction="row" style={styles.chatSendContainer}>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={(value) => {
+              setChatbox(value);
+            }}
+            onSubmitEditing={sendChatMessage}
+            value={chatbox}
+            blurOnSubmit={false}
+          />
+          {chatbox !== "" && (
+            <IconButton
+              style={{
+                maxHeight: "100%",
+                aspectRatio: 1,
+                paddingRight: 0,
+                backgroundColor: "purple",
+                borderRadius: 50,
+              }}
+              icon={(props) => <Icon name="arrow-up" {...props} />}
+              onPress={sendChatMessage}
+            ></IconButton>
+          )}
+        </Stack>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -128,11 +187,11 @@ export default function Matched() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
-    borerWidth: 10,
+    borderWidth: 10,
     borderColor: "green",
   },
   contentContainer: {
@@ -150,14 +209,24 @@ const styles = StyleSheet.create({
   },
   activity: {},
   messageHistory: {
-    height: "40%",
+    marginHorizontal: 5,
   },
-  message: {},
   chatSendContainer: {
     alignItems: "center",
+    height: 48,
+    backgroundColor: "lightgrey",
+    borderRadius: 50,
+    paddingLeft: 10,
+    marginTop: 5,
+    marginHorizontal: 10,
   },
   textInput: {
     flexGrow: 1,
   },
-  textSend: {},
+  textSend: {
+    backgroundColor: "aquamarine",
+  },
+  textSendIcon: {
+    color: "white",
+  },
 });

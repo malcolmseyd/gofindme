@@ -61,6 +61,7 @@ const Map = (props: MapProps) => {
           initialRegion={region()}
           showsUserLocation
           onUserLocationChange={locChanged}
+          provider="google"
         >
           <Marker key={0} coordinate={props.otherLoc} title={"Your friend :)"}>
             <Image

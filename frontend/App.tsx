@@ -1,11 +1,11 @@
-import { Button } from "@react-native-material/core";
+import { IconComponentProvider } from "@react-native-material/core";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text } from "react-native";
 import * as Location from "expo-location";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { PageType } from "./src/common/PageType";
 import Home from "./src/pages/Home";
 import Waiting from "./src/pages/Waiting";
 import Matched from "./src/pages/Matched";
@@ -34,7 +34,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <>
+    <IconComponentProvider IconComponent={MaterialCommunityIcons}>
       <StatusBar style="auto" />
       {state.err && (
         <Text>
@@ -64,7 +64,7 @@ export default function App() {
         </NavigationContainer>
       )}
       <Footer />
-    </>
+    </IconComponentProvider>
   );
 }
 
