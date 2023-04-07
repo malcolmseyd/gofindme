@@ -1,4 +1,5 @@
 defmodule Backend.Mock.Router do
+  require Logger
   use Plug.Router
 
   plug(Plug.Parsers,
@@ -10,17 +11,22 @@ defmodule Backend.Mock.Router do
   plug(:match)
   plug(:dispatch)
 
-  get "/start" do
-    session_token =
-      :rand.bytes(8)
-      |> :base64.encode_to_string()
-      |> to_string()
+  post "/start" do
+    # TODO use Ecto for validation
+    with {:ok, _name} <- conn.body_params |> Map.fetch("name") do
+      session_token =
+        :rand.bytes(8)
+        |> :base64.encode_to_string()
+        |> to_string()
 
-    resp = Jason.encode!(%{session: session_token})
-
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, resp)
+      conn
+      |> put_resp_cookie("session", session_token)
+      |> send_resp(200, "ok")
+    else
+      :error ->
+        conn
+        |> send_resp(400, "bad request")
+    end
   end
 
   match("/socket", to: Backend.Mock.Socket)

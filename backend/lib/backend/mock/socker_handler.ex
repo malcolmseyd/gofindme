@@ -20,12 +20,10 @@ defmodule Backend.Mock.SocketHandler do
 
     Logger.debug("new websocket connection")
 
-    send(self(), :mock_location)
-    ticker_ref = :timer.send_interval(1000, :mock_location)
+    :timer.send_after(500, :paired)
 
-    state = state |> Map.put(:ticker_ref, ticker_ref)
-
-    {:ok, state}
+    json_map(type: "searching")
+    |> reply_json(state)
   end
 
   def websocket_handle({:text, text}, state) do
@@ -42,6 +40,16 @@ defmodule Backend.Mock.SocketHandler do
   def websocket_handle(frame, state) do
     Logger.debug(unhandled_websocket_frame: frame)
     {:ok, state}
+  end
+
+  def websocket_info(:paired, state) do
+    # setup mocked location updates
+    send(self(), :mock_location)
+    ticker_ref = :timer.send_interval(1000, :mock_location)
+    state = state |> Map.put(:ticker_ref, ticker_ref)
+
+    json_map(type: "paired", name: "Mr. Mock")
+    |> reply_json(state)
   end
 
   def websocket_info(:mock_location, state) do
