@@ -7,9 +7,7 @@ import * as Location from "expo-location";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./src/pages/Home";
-import Waiting from "./src/pages/Waiting";
-import Matched from "./src/pages/Matched";
-import Header from "./src/components/Header";
+import Main from "./src/pages/Main";
 import Footer from "./src/components/Footer";
 
 interface State {
@@ -48,17 +46,12 @@ export default function App() {
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{ title: "HomeScreen" }}
+              options={{ title: "GoFindMe" }}
             />
             <Stack.Screen
-              name="Searching"
-              component={Waiting}
-              options={{ title: "WaitingScreen" }}
-            />
-            <Stack.Screen
-              name="Matched"
-              component={Matched}
-              options={{ title: "Map" }}
+              name="Main"
+              component={Main}
+              options={{ title: "GoFindMe" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
