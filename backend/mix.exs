@@ -23,7 +23,10 @@ defmodule Backend.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.6"},
-      {:jason, "~> 1.4"}
+      {:jason, "~> 1.4"},
+      {:ecto, "~> 3.10"},
+      {:ecto_sql, "~> 3.10"},
+      {:postgrex, "~> 0.17.1"}
     ]
   end
 end

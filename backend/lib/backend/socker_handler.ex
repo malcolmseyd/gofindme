@@ -1,4 +1,4 @@
-defmodule Backend.Mock.SocketHandler do
+defmodule Backend.SocketHandler do
   require Logger
   require Jason.Helpers
   import Jason.Helpers, only: [json_map: 1]

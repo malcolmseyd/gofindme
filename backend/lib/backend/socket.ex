@@ -1,4 +1,4 @@
-defmodule Backend.Mock.Socket do
+defmodule Backend.Socket do
   require Logger
   import Plug.Conn
 
