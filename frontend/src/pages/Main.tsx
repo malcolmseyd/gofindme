@@ -14,6 +14,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import Map from "../components/Map";
 import { BasicLocation } from "../common/BasicLocation";
@@ -21,6 +23,7 @@ import useWebSocket from "react-use-websocket";
 import BasePageProps from "../common/BasePageProps";
 import MapView, { Region } from "react-native-maps";
 import * as Location from "expo-location";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MOCK_SOCKET_SERVER =
   "wss://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/socket";
@@ -153,14 +156,21 @@ export default function Main(props: BasePageProps) {
   };
 
   const renderChatItem = (e: any) => (
-    <Text>
-      <Text
-        style={e.item.sender === name ? { color: "blue" } : { color: "red" }}
-      >
-        {e.item.sender}
+    <View
+      style={{
+        alignSelf: e.item.sender === name ? "flex-end" : "flex-start",
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        borderRadius: 50,
+        backgroundColor: e.item.sender === name ? "blue" : "darkgrey",
+        marginHorizontal: 5,
+        marginBottom: 2,
+      }}
+    >
+      <Text style={{ color: "white" }}>
+        {e.item.sender}: {e.item.message}
       </Text>
-      : {e.item.message}
-    </Text>
+    </View>
   );
 
   const updateMapRef = (mapView: MapView | null) => {
@@ -170,102 +180,106 @@ export default function Main(props: BasePageProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Box style={styles.mapContainer}>
-          <Map
-            updateLocation={updateLoc}
-            loc={loc}
-            otherLoc={otherLoc}
-            otherName={otherName}
-            setMapRef={updateMapRef}
-          />
-        </Box>
-      </View>
-      {otherName ? (
-        <>
-          <FlatList
-            style={styles.messageHistory}
-            data={chatMessages}
-            renderItem={renderChatItem}
-            inverted
-            contentContainerStyle={{
-              flexDirection: "column-reverse",
-            }}
-          />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{
-              alignItems: "center",
-            }}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-          >
-            <Stack direction="row" style={styles.chatSendContainer}>
-              <TextInput
-                style={styles.textInput}
-                onChangeText={(value) => {
-                  setChatbox(value);
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      style={styles.flexOne}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <View style={styles.mapContainer}>
+            <Map
+              updateLocation={updateLoc}
+              loc={loc}
+              otherLoc={otherLoc}
+              otherName={otherName}
+              setMapRef={updateMapRef}
+            />
+          </View>
+          {otherName ? (
+            <View style={styles.chat}>
+              <FlatList
+                style={styles.messageHistory}
+                data={chatMessages}
+                renderItem={renderChatItem}
+                inverted
+                contentContainerStyle={{
+                  flexDirection: "column-reverse",
                 }}
-                onSubmitEditing={sendChatMessage}
-                value={chatbox}
-                blurOnSubmit={false}
               />
-              {chatbox !== "" && (
-                <IconButton
-                  style={{
-                    maxHeight: "100%",
-                    aspectRatio: 1,
-                    paddingRight: 0,
-                    backgroundColor: "purple",
-                    borderRadius: 50,
-                  }}
-                  icon={(props) => <Icon name="arrow-up" {...props} />}
-                  onPress={sendChatMessage}
-                ></IconButton>
-              )}
-            </Stack>
-          </KeyboardAvoidingView>
-        </>
-      ) : (
-        <ActivityIndicator />
-      )}
-    </View>
+              <View style={styles.footer}>
+                <Stack direction="row" style={styles.chatSendContainer}>
+                  <TextInput
+                    placeholder="Enter a message..."
+                    style={styles.textInput}
+                    onChangeText={(value) => {
+                      setChatbox(value);
+                    }}
+                    onSubmitEditing={sendChatMessage}
+                    value={chatbox}
+                    blurOnSubmit={false}
+                  />
+                  {chatbox !== "" && (
+                    <IconButton
+                      style={{
+                        width: 32,
+                        aspectRatio: 1,
+                        paddingRight: 0,
+                        backgroundColor: "grey",
+                        borderRadius: 50,
+                      }}
+                      icon={(props) => <Icon name="arrow-up" {...props} />}
+                      onPress={sendChatMessage}
+                    ></IconButton>
+                  )}
+                </Stack>
+              </View>
+            </View>
+          ) : (
+            <ActivityIndicator style={{ height: "50%" }} />
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flexOne: {
     flex: 1,
-    // backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
   },
-  contentContainer: {
-    width: "100%",
-    flexGrow: 1,
+  inner: {
+    height: "100%",
+    flex: 1,
   },
   mapContainer: {
-    height: "50%",
-    backgroundColor: "#9bbff4",
-    justifyContent: "space-around",
-  },
-  mapView: {
     width: "100%",
-    height: "100%",
+    height: "50%",
+    flexGrow: 1,
+    backgroundColor: "#9bbff4",
   },
-  activity: {},
+  chat: {
+    height: "50%",
+    alignItems: "center",
+  },
   messageHistory: {
     marginHorizontal: 5,
+    width: "100%",
+    flexGrow: 2,
+  },
+  footer: {
+    backgroundColor: "darkgrey",
   },
   chatSendContainer: {
+    margin: 2,
     alignItems: "center",
-    height: 48,
+    height: 32,
     backgroundColor: "lightgrey",
+    width: "100%",
     borderRadius: 50,
     paddingLeft: 10,
-    marginTop: 5,
-    marginHorizontal: 10,
+    borderColor: "grey",
+    borderWidth: 1,
   },
   textInput: {
     flexGrow: 1,
@@ -275,5 +289,10 @@ const styles = StyleSheet.create({
   },
   textSendIcon: {
     color: "white",
+  },
+  chatItem: {
+    padding: 2,
+    marginHorizontal: 5,
+    marginVertical: 2,
   },
 });

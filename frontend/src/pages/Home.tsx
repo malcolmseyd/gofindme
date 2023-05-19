@@ -11,12 +11,16 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import BasePageProps from "../common/BasePageProps";
 import * as Location from "expo-location";
 import { BasicLocation } from "../common/BasicLocation";
+import { Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const MESSAGE = "Welcome to GoFindMe!";
+const MESSAGE = "";
 
 export default function Home(props: BasePageProps) {
   const [msg, setMsg] = useState(MESSAGE);
@@ -66,12 +70,11 @@ export default function Home(props: BasePageProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {spinner ? (
         <ActivityIndicator />
       ) : (
-        <>
-          <Text>{msg}</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{
@@ -79,27 +82,34 @@ export default function Home(props: BasePageProps) {
             }}
             keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
           >
+            <Image
+              style={styles.logo}
+              source={require("../../assets/stinky.png")}
+            />
+            <Text>{msg}</Text>
             <Stack direction="row">
               <TextInput
+                placeholder="Enter your name"
                 onChangeText={(value) => {
                   setName(value);
                 }}
                 onSubmitEditing={getCookie}
                 value={name}
                 blurOnSubmit={false}
+                style={styles.nameInput}
               />
             </Stack>
+            <Button
+              title="Search"
+              variant="contained"
+              onTouchEnd={(e) => {
+                getCookie();
+              }}
+            />
           </KeyboardAvoidingView>
-          <Button
-            title="Search"
-            variant="contained"
-            onTouchEnd={(e) => {
-              getCookie();
-            }}
-          />
-        </>
+        </TouchableWithoutFeedback>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -109,5 +119,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  nameInput: {
+    width: "80%",
+  },
+  logo: {
+    maxWidth: "50%",
+    maxHeight: "50%",
+    aspectRatio: 1,
   },
 });
