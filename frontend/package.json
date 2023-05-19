@@ -23,7 +23,8 @@
     "react-native-screens": "~3.18.0",
     "react-native-web": "~0.18.9",
     "react-use-websocket": "^4.2.0",
-    "undefined": "@expo/vector-icons/MaterialCommunityIcons"
+    "undefined": "@expo/vector-icons/MaterialCommunityIcons",
+    "@expo/webpack-config": "^0.17.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
