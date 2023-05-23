@@ -1,10 +1,5 @@
-import {
-  ActivityIndicator,
-  Button,
-  Stack,
-  TextInput,
-} from "@react-native-material/core";
-import React, { useState } from "react";
+import { ActivityIndicator, Button, Stack } from "@react-native-material/core";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -13,16 +8,45 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  StatusBar,
 } from "react-native";
 import BasePageProps from "../common/BasePageProps";
 import * as Location from "expo-location";
 import { BasicLocation } from "../common/BasicLocation";
-import { Image } from "react-native";
+import { Image, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeContext } from "../Contexts";
+import light from "../../themes/Light";
+import dark from "../../themes/Dark";
 
 const MESSAGE = "";
 
 export default function Home(props: BasePageProps) {
+  const theme = useContext(ThemeContext) === "light" ? light : dark;
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    nameInput: {
+      width: "50%",
+      borderColor: theme.chatBoxBorder,
+      borderWidth: 1,
+      borderRadius: 50,
+      textAlign: "center",
+      height: 30,
+      margin: 10,
+      color: theme.textInputColor,
+    },
+    logo: {
+      maxWidth: "50%",
+      maxHeight: "50%",
+      aspectRatio: 1,
+    },
+  });
+
   const [msg, setMsg] = useState(MESSAGE);
   const [name, setName] = useState("");
   const [spinner, setSpinner] = useState(false);
@@ -37,8 +61,6 @@ export default function Home(props: BasePageProps) {
         };
       }
     );
-
-    console.log(loc);
 
     let res = await fetch(
       "https://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/start",
@@ -70,11 +92,15 @@ export default function Home(props: BasePageProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {spinner ? (
-        <ActivityIndicator />
-      ) : (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle={theme.statusBar}
+          backgroundColor={theme.background}
+        />
+        {spinner ? (
+          <ActivityIndicator />
+        ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{
@@ -91,12 +117,16 @@ export default function Home(props: BasePageProps) {
               <TextInput
                 placeholder="Enter your name"
                 onChangeText={(value) => {
-                  setName(value);
+                  if (value.length < 20) {
+                    setName(value);
+                  }
                 }}
                 onSubmitEditing={getCookie}
                 value={name}
                 blurOnSubmit={false}
                 style={styles.nameInput}
+                placeholderTextColor={theme.textInputColorPlaceholder}
+                keyboardAppearance={theme.keyboardAppearance}
               />
             </Stack>
             <Button
@@ -107,25 +137,8 @@ export default function Home(props: BasePageProps) {
               }}
             />
           </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      )}
-    </SafeAreaView>
+        )}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  nameInput: {
-    width: "80%",
-  },
-  logo: {
-    maxWidth: "50%",
-    maxHeight: "50%",
-    aspectRatio: 1,
-  },
-});

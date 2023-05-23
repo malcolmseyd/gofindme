@@ -5,7 +5,7 @@ import {
   IconButton,
   Stack,
 } from "@react-native-material/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -16,6 +16,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  StatusBar,
 } from "react-native";
 import Map from "../components/Map";
 import { BasicLocation } from "../common/BasicLocation";
@@ -24,6 +25,9 @@ import BasePageProps from "../common/BasePageProps";
 import MapView, { Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeContext } from "../Contexts";
+import dark from "../../themes/Dark";
+import light from "../../themes/Light";
 
 const MOCK_SOCKET_SERVER =
   "wss://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/socket";
@@ -54,6 +58,65 @@ interface Chat {
 type Message = LocationMessage | ChatMessage | PairedMessage | any;
 
 export default function Main(props: BasePageProps) {
+  const theme = useContext(ThemeContext) === "light" ? light : dark;
+  const styles = StyleSheet.create({
+    flexOne: {
+      flex: 1,
+    },
+    inner: {
+      height: "100%",
+      flex: 1,
+    },
+    mapContainer: {
+      width: "100%",
+      height: "50%",
+      flexGrow: 1,
+      backgroundColor: theme.waterColor,
+    },
+    chat: {
+      height: "50%",
+      alignItems: "center",
+    },
+    chatLoading: {
+      backgroundColor: theme.background,
+    },
+    messageHistory: {
+      marginHorizontal: 5,
+      width: "100%",
+      flexGrow: 2,
+      backgroundColor: theme.background,
+    },
+    footer: {
+      backgroundColor: theme.chatBarBackground,
+    },
+    chatSendContainer: {
+      margin: 2,
+      alignItems: "center",
+      height: 32,
+      backgroundColor: theme.chatBarBackground,
+      width: "100%",
+      borderRadius: 50,
+      paddingLeft: 10,
+      borderColor: "grey",
+      borderWidth: 1,
+    },
+    textInput: {
+      flexGrow: 1,
+      color: theme.textInputColor,
+    },
+    textSend: {
+      backgroundColor: "aquamarine",
+    },
+    textSendIcon: {
+      color: "white",
+    },
+    chatItem: {
+      padding: 2,
+      marginHorizontal: 5,
+      marginVertical: 2,
+    },
+  });
+
   const cookie = props.route.params.cookie;
   const name = props.route.params.name;
 
@@ -187,6 +250,10 @@ export default function Main(props: BasePageProps) {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
+          <StatusBar
+            barStyle={theme.statusBar}
+            backgroundColor={theme.background}
+          />
           <View style={styles.mapContainer}>
             <Map
               updateLocation={updateLoc}
@@ -194,6 +261,7 @@ export default function Main(props: BasePageProps) {
               otherLoc={otherLoc}
               otherName={otherName}
               setMapRef={updateMapRef}
+              mapStyle={theme.mapStyle}
             />
           </View>
           {otherName ? (
@@ -211,6 +279,7 @@ export default function Main(props: BasePageProps) {
                 <Stack direction="row" style={styles.chatSendContainer}>
                   <TextInput
                     placeholder="Enter a message..."
+                    placeholderTextColor={theme.textInputColorPlaceholder}
                     style={styles.textInput}
                     onChangeText={(value) => {
                       setChatbox(value);
@@ -218,6 +287,7 @@ export default function Main(props: BasePageProps) {
                     onSubmitEditing={sendChatMessage}
                     value={chatbox}
                     blurOnSubmit={false}
+                    keyboardAppearance={theme.keyboardAppearance}
                   />
                   {chatbox !== "" && (
                     <IconButton
@@ -236,63 +306,12 @@ export default function Main(props: BasePageProps) {
               </View>
             </View>
           ) : (
-            <ActivityIndicator style={{ height: "50%" }} />
+            <View style={styles.chatLoading}>
+              <ActivityIndicator style={{ height: "50%" }} />
+            </View>
           )}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flexOne: {
-    flex: 1,
-  },
-  inner: {
-    height: "100%",
-    flex: 1,
-  },
-  mapContainer: {
-    width: "100%",
-    height: "50%",
-    flexGrow: 1,
-    backgroundColor: "#9bbff4",
-  },
-  chat: {
-    height: "50%",
-    alignItems: "center",
-  },
-  messageHistory: {
-    marginHorizontal: 5,
-    width: "100%",
-    flexGrow: 2,
-  },
-  footer: {
-    backgroundColor: "darkgrey",
-  },
-  chatSendContainer: {
-    margin: 2,
-    alignItems: "center",
-    height: 32,
-    backgroundColor: "lightgrey",
-    width: "100%",
-    borderRadius: 50,
-    paddingLeft: 10,
-    borderColor: "grey",
-    borderWidth: 1,
-  },
-  textInput: {
-    flexGrow: 1,
-  },
-  textSend: {
-    backgroundColor: "aquamarine",
-  },
-  textSendIcon: {
-    color: "white",
-  },
-  chatItem: {
-    padding: 2,
-    marginHorizontal: 5,
-    marginVertical: 2,
-  },
-});

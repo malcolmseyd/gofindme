@@ -14,6 +14,7 @@ export interface MapProps {
   otherLoc?: BasicLocation;
   otherName: string;
   setMapRef: (mapRef: MapView | null) => void;
+  mapStyle: any;
 }
 
 const Map = (props: MapProps) => {
@@ -55,6 +56,7 @@ const Map = (props: MapProps) => {
           showsUserLocation
           onUserLocationChange={locChanged}
           provider="google"
+          customMapStyle={props.mapStyle}
         >
           {props.otherLoc && (
             <Marker key={0} coordinate={props.otherLoc} title={props.otherName}>
