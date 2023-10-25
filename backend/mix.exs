@@ -26,7 +26,8 @@ defmodule Backend.MixProject do
       {:jason, "~> 1.4"},
       {:ecto, "~> 3.10"},
       {:ecto_sql, "~> 3.10"},
-      {:postgrex, "~> 0.17.1"}
+      {:postgrex, "~> 0.17.1"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 end
