@@ -27,6 +27,7 @@ backend-*.tar
 
 # For Emacs users
 .projectile
+TODO.org
 
 # direnv 
 .envrc
