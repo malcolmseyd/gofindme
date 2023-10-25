@@ -1,6 +1,8 @@
 defmodule Backend.Router do
   require Logger
   use Plug.Router
+  alias Backend.Schema
+  alias Backend.Repo
 
   plug(Plug.RequestId)
   plug(Plug.Logger)
@@ -15,20 +17,12 @@ defmodule Backend.Router do
   plug(:dispatch)
 
   post "/start" do
-    # TODO use Ecto for validation
-    with {:ok, _name} <- conn.body_params |> Map.fetch("name") do
-      session =
-        %Backend.Schema.Session{}
-        |> Backend.Schema.Session.changeset(%{})
-        |> Backend.Repo.insert!()
-
-      session_token =
-        session.token
-        |> :base64.encode_to_string()
-        |> to_string()
-
+    with {:ok, session} <-
+           conn.body_params
+           |> Schema.Session.create_changeset()
+           |> Repo.insert(returning: [:token]) do
       conn
-      |> put_resp_cookie("session", session_token)
+      |> put_resp_cookie("session", session.token)
       |> send_resp(200, "ok")
     else
       :error ->

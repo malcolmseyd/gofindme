@@ -1,16 +1,19 @@
 defmodule Backend.Schema.Session do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Ecto.UUID
+
+  @primary_key {:id, :id, autogenerate: true}
+  @foreign_key_type :id
 
   schema "session" do
-    field(:token, :binary_id, primary_key: true)
+    field(:token, Ecto.UUID)
+    field(:name, :string)
   end
 
-  def changeset(session, attrs) do
-    session
-    |> cast(attrs, [:token])
-    |> put_change(:token, UUID.generate())
-    |> validate_required([:token])
+  @spec create_changeset(%{name: :string}) :: Ecto.Changeset.t()
+  def create_changeset(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
   end
 end
