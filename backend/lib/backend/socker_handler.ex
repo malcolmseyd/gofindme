@@ -3,6 +3,9 @@ defmodule Backend.SocketHandler do
   require Jason.Helpers
   import Jason.Helpers, only: [json_map: 1]
 
+  alias Backend.Repo
+  alias Backend.Schema
+
   # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket
   @behaviour :cowboy_websocket
 
@@ -17,6 +20,8 @@ defmodule Backend.SocketHandler do
     state
     |> Map.get(:logger_metadata)
     |> Logger.metadata()
+
+    state = Map.delete(state, :logger_metadata)
 
     Logger.debug("new websocket connection")
 
@@ -110,8 +115,19 @@ defmodule Backend.SocketHandler do
     {:ok, state}
   end
 
-  defp handle_msg(%{"type" => "location_update", "lat" => lat, "long" => long}, state) do
+  defp handle_msg(
+         %{"type" => "location_update", "lat" => lat, "long" => long},
+         state = %{session: session}
+       ) do
     Logger.debug(msg: "location_update", lat: lat, long: long)
+
+    %{latitude: lat, longitude: long, session_id: session.id}
+    |> Schema.Queuing.create_changeset()
+    |> Repo.insert_or_update!(
+      conflict_target: [:session_id],
+      on_conflict: {:replace, [:latitude, :longitude]}
+    )
+
     {:ok, state}
   end
 
