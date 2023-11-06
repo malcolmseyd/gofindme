@@ -65,18 +65,15 @@ export default function Home(props: BasePageProps) {
       }
     );
 
-    let res = await fetch(
-      "https://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/start",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-        }),
-      }
-    );
+    let res = await fetch("https://gofindme.ocha.ca/mock/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+      }),
+    });
 
     // console.log(res);
     if (res.status == 200) {

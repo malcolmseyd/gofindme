@@ -1,11 +1,10 @@
 import {
   ActivityIndicator,
-  Box,
   Icon,
   IconButton,
   Stack,
 } from "@react-native-material/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -23,14 +22,11 @@ import { BasicLocation } from "../common/BasicLocation";
 import useWebSocket from "react-use-websocket";
 import BasePageProps from "../common/BasePageProps";
 import MapView, { Region } from "react-native-maps";
-import * as Location from "expo-location";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeContext } from "../Contexts";
 import dark from "../../themes/Dark";
 import light from "../../themes/Light";
 
-const MOCK_SOCKET_SERVER =
-  "wss://xo2pf2wtkpukb6iwn3t3cz6t4m.srv.us/mock/socket";
+const MOCK_SOCKET_SERVER = "wss://gofindme.ocha.ca/mock/socket";
 
 interface BaseMessage {
   type: string;
@@ -183,6 +179,9 @@ export default function Main(props: BasePageProps) {
           type: "keep_alive",
         })
       );
+    },
+    onError: (e) => {
+      console.log(`problem connecting to websocket ${e}`);
     },
   });
 
