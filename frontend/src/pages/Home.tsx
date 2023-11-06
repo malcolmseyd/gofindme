@@ -45,6 +45,9 @@ export default function Home(props: BasePageProps) {
       maxHeight: "50%",
       aspectRatio: 1,
     },
+    message: {
+      color: theme.textInputColor,
+    },
   });
 
   const [msg, setMsg] = useState(MESSAGE);
@@ -112,7 +115,7 @@ export default function Home(props: BasePageProps) {
               style={styles.logo}
               source={require("../../assets/stinky.png")}
             />
-            <Text>{msg}</Text>
+            <Text style={styles.message}>{msg}</Text>
             <Stack direction="row">
               <TextInput
                 placeholder="Enter your name"
