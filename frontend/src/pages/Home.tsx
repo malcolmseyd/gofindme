@@ -1,23 +1,25 @@
 import { ActivityIndicator, Button, Stack } from "@react-native-material/core";
+import * as Location from "expo-location";
 import React, { useContext, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  Text,
+  Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
 } from "react-native";
-import BasePageProps from "../common/BasePageProps";
-import * as Location from "expo-location";
-import { BasicLocation } from "../common/BasicLocation";
-import { Image, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemeContext } from "../Contexts";
-import light from "../../themes/Light";
 import dark from "../../themes/Dark";
+import light from "../../themes/Light";
+import { ThemeContext } from "../Contexts";
+import BasePageProps from "../common/BasePageProps";
+import { BasicLocation } from "../common/BasicLocation";
+
+const QUEUE_SERVER = process.env.EXPO_PUBLIC_QUEUE_SERVER;
 
 const MESSAGE = "";
 
@@ -64,8 +66,9 @@ export default function Home(props: BasePageProps) {
         };
       }
     );
+    console.log(`queue server: ${QUEUE_SERVER}`);
 
-    let res = await fetch("https://gofindme.ocha.ca/mock/start", {
+    let res = await fetch(QUEUE_SERVER ?? "", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

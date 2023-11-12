@@ -1,19 +1,20 @@
-import { IconComponentProvider } from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, Image } from "react-native";
-import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IconComponentProvider } from "@react-native-material/core";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Home from "./src/pages/Home";
-import Main from "./src/pages/Main";
+import * as Location from "expo-location";
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, Text } from "react-native";
+import Config from "react-native-config";
+import { ThemeContext } from "./src/Contexts";
 import Footer from "./src/components/Footer";
 import ThemeSelector, { Selection } from "./src/components/ThemeSelector";
-import light from "./themes/Light";
+import Home from "./src/pages/Home";
+import Main from "./src/pages/Main";
 import dark from "./themes/Dark";
-import { ThemeContext } from "./src/Contexts";
+import light from "./themes/Light";
 
 interface State {
   err: string | undefined;
@@ -32,6 +33,10 @@ export default function App() {
 
     return "light";
   };
+
+  console.log(`queue server: ${process.env.EXPO_PUBLIC_QUEUE_SERVER}`);
+  console.log(`socket server: ${process.env.EXPO_PUBLIC_SOCKET_SERVER}`);
+  console.log(process.env);
 
   const [state, setState] = useState<State>({ err: undefined });
   const [themeSelection, setThemeSelection] = useState<Selection>(

@@ -6,27 +6,27 @@ import {
 } from "@react-native-material/core";
 import React, { useContext, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  Text,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableWithoutFeedback,
-  Keyboard,
-  StatusBar,
+  View,
 } from "react-native";
-import Map from "../components/Map";
-import { BasicLocation } from "../common/BasicLocation";
-import useWebSocket from "react-use-websocket";
-import BasePageProps from "../common/BasePageProps";
 import MapView, { Region } from "react-native-maps";
-import { ThemeContext } from "../Contexts";
+import useWebSocket from "react-use-websocket";
 import dark from "../../themes/Dark";
 import light from "../../themes/Light";
+import { ThemeContext } from "../Contexts";
+import BasePageProps from "../common/BasePageProps";
+import { BasicLocation } from "../common/BasicLocation";
+import Map from "../components/Map";
 
-const MOCK_SOCKET_SERVER = "wss://gofindme.ocha.ca/mock/socket";
+const SOCKET_SERVER = process.env.EXPO_PUBLIC_SOCKET_SERVER ?? "";
 
 interface BaseMessage {
   type: string;
@@ -136,7 +136,7 @@ export default function Main(props: BasePageProps) {
     lastJsonMessage,
     readyState,
     getWebSocket,
-  } = useWebSocket(MOCK_SOCKET_SERVER, {
+  } = useWebSocket(SOCKET_SERVER, {
     onOpen: () => console.log("opened"),
     shouldReconnect: (closeEvent) => true,
     onMessage: (e) => {
