@@ -5,6 +5,8 @@ config :backend, Backend.Repo,
   username: System.get_env("DB_USER"),
   password: System.get_env("DB_PASS"),
   hostname: System.get_env("DB_HOST"),
+  # postgrex was breaking with pgbouncer, can't use named prepared statements
+  prepare: :unnamed,
   ssl: true,
   ssl_opts: [
     server_name_indication: to_charlist(System.get_env("DB_HOST")),
