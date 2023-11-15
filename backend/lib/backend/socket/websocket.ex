@@ -13,9 +13,13 @@ defmodule Backend.Socket.Websocket do
   @impl :cowboy_websocket
   def websocket_init(state) do
     # assign the logger metadata from the Plug process
-    state
-    |> Map.get(:logger_metadata)
-    |> Logger.metadata()
+    %{
+      logger_metadata: logger_metadata,
+      session: session
+    } = state
+
+    Logger.metadata(logger_metadata)
+    Backend.Socket.Agent.add(session.id, self())
 
     state = Map.delete(state, :logger_metadata)
 
@@ -80,8 +84,14 @@ defmodule Backend.Socket.Websocket do
         Logger.debug(websocket_terminated: reason)
     end
 
-    %{ticker_ref: ticker_ref} = state
+    %{
+      ticker_ref: ticker_ref,
+      session: session
+    } = state
+
     :timer.cancel(ticker_ref)
+    Backend.Socket.Agent.remove(session.id)
+
     :ok
   end
 

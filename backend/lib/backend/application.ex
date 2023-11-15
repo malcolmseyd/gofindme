@@ -8,6 +8,7 @@ defmodule Backend.Application do
   def start(_type, _args) do
     children = [
       Backend.Repo,
+      Backend.Socket.Agent,
       {Plug.Cowboy, scheme: :http, plug: Backend.Router, options: [port: 8080]}
     ]
 
