@@ -23,7 +23,7 @@ defmodule Backend.Socket do
       conn_opts = %{compress: true}
 
       # https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html#module-websocket-support
-      details = {Backend.SocketHandler, handler_opts, conn_opts}
+      details = {Backend.Socket.Websocket, handler_opts, conn_opts}
       upgrade_adapter(conn, :websocket, details)
     else
       _ -> resp(conn, 403, "unauthorized")

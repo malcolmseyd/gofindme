@@ -1,10 +1,6 @@
-defmodule Backend.SocketHandler do
+defmodule Backend.Socket.Websocket do
   require Logger
-  require Jason.Helpers
   import Jason.Helpers, only: [json_map: 1]
-
-  alias Backend.Repo
-  alias Backend.Schema
 
   # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket
   @behaviour :cowboy_websocket
@@ -31,10 +27,12 @@ defmodule Backend.SocketHandler do
     |> reply_json(state)
   end
 
+  @impl :cowboy_websocket
   def websocket_handle({:text, text}, state) do
-    with {:ok, json} <- Jason.decode(text) do
-      handle_msg(json, state)
-    else
+    case Jason.decode(text) do
+      {:ok, json} ->
+        Backend.Socket.Handler.handle_message(json, state)
+
       {:error, %Jason.DecodeError{position: pos}} ->
         json_map(error: "Error parsing JSON at position #{pos}")
         |> reply_json(state)
@@ -47,6 +45,7 @@ defmodule Backend.SocketHandler do
     {:ok, state}
   end
 
+  @impl :cowboy_websocket
   def websocket_info(:paired, state) do
     # setup mocked location updates
     send(self(), :mock_location)
@@ -57,6 +56,7 @@ defmodule Backend.SocketHandler do
     |> reply_json(state)
   end
 
+  @impl :cowboy_websocket
   def websocket_info(:mock_location, state) do
     {lat, long} = mock_coords()
 
@@ -100,39 +100,5 @@ defmodule Backend.SocketHandler do
     map
     |> Jason.encode!()
     |> reply_text(state)
-  end
-
-  defp handle_msg(%{"type" => "chat", "msg" => msg}, state) do
-    # respond with a timestamped echo
-    now = DateTime.utc_now()
-
-    json_map(type: "chat", msg: msg, sent: now)
-    |> reply_json(state)
-  end
-
-  defp handle_msg(%{"type" => "keep_alive"}, state) do
-    Logger.debug(msg: "keep_alive")
-    {:ok, state}
-  end
-
-  defp handle_msg(
-         %{"type" => "location_update", "lat" => lat, "long" => long},
-         state = %{session: session}
-       ) do
-    Logger.debug(msg: "location_update", lat: lat, long: long)
-
-    %{latitude: lat, longitude: long, session_id: session.id}
-    |> Schema.Queuing.create_changeset()
-    |> Repo.insert_or_update!(
-      conflict_target: [:session_id],
-      on_conflict: {:replace, [:latitude, :longitude]}
-    )
-
-    {:ok, state}
-  end
-
-  defp handle_msg(msg, state) do
-    Logger.debug(unhandled_msg: msg)
-    {:ok, state}
   end
 end
