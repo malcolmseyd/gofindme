@@ -1,56 +1,29 @@
-import { ActivityIndicator, Button, Stack } from "@react-native-material/core";
 import * as Location from "expo-location";
 import React, { useContext, useState } from "react";
 import {
-  Image,
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
-  StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import dark from "../../themes/Dark";
-import light from "../../themes/Light";
 import { ThemeContext } from "../Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
+import style from "../styles/GlobalStyles";
+import TextButton from "../components/TextButton";
 
 const QUEUE_SERVER = process.env.EXPO_PUBLIC_QUEUE_SERVER;
 
 const MESSAGE = "";
 
 export default function Home(props: BasePageProps) {
-  const theme = useContext(ThemeContext) === "light" ? light : dark;
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.background1,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    nameInput: {
-      width: "50%",
-      borderColor: theme.chatBoxBorder,
-      borderWidth: 1,
-      borderRadius: 50,
-      textAlign: "center",
-      height: 30,
-      margin: 10,
-      color: theme.textInputColor,
-    },
-    logo: {
-      maxWidth: "50%",
-      maxHeight: "50%",
-      aspectRatio: 1,
-    },
-    message: {
-      color: theme.textInputColor,
-    },
-  });
+  const theme = useContext(ThemeContext);
+  const styles = style({ theme });
 
   const [msg, setMsg] = useState(MESSAGE);
   const [name, setName] = useState("");
@@ -96,49 +69,43 @@ export default function Home(props: BasePageProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeAreaView}>
         <StatusBar
           barStyle={theme.statusBar}
-          backgroundColor={theme.background}
+          backgroundColor={theme.backgroundPrimary}
         />
         {spinner ? (
           <ActivityIndicator />
         ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{
-              alignItems: "center",
-            }}
+            style={styles.keyboardAvoidingView}
             keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
           >
-            <Image
-              style={styles.logo}
-              source={require("../../assets/stinky.png")}
-            />
+            <Text style={styles.title}>GoFindMe</Text>
             <Text style={styles.message}>{msg}</Text>
-            <Stack direction="row">
-              <TextInput
-                placeholder="Enter your name"
-                onChangeText={(value) => {
-                  if (value.length < 20) {
-                    setName(value);
-                  }
-                }}
-                onSubmitEditing={getCookie}
-                value={name}
-                blurOnSubmit={false}
-                style={styles.nameInput}
-                placeholderTextColor={theme.textInputColorPlaceholder}
-                keyboardAppearance={theme.keyboardAppearance}
-              />
-            </Stack>
-            <Button
-              title="Search"
-              variant="contained"
-              onTouchEnd={(e) => {
+            <TextInput
+              placeholder="Enter your name"
+              onChangeText={(value) => {
+                if (value.length < 20) {
+                  setName(value);
+                }
+              }}
+              onSubmitEditing={getCookie}
+              value={name}
+              blurOnSubmit={false}
+              style={styles.shortInputBox}
+              placeholderTextColor={theme.textInputPlaceholderColor}
+              keyboardAppearance={theme.keyboardAppearance}
+            />
+            <TextButton
+              onPress={() => {
                 getCookie();
               }}
-            />
+              styles={styles}
+            >
+              Search
+            </TextButton>
           </KeyboardAvoidingView>
         )}
       </SafeAreaView>

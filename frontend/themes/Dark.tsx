@@ -1,18 +1,27 @@
 import Theme from "./Theme";
 
 const dark: Theme = {
+  stringValue: "dark",
   keyboardAppearance: "dark",
   statusBar: "light-content",
 
-  background: "#121212",
-  background1: "#191919",
-  background2: "#ffffff",
-  background3: "#ffffff",
+  backgroundPrimary: "#121212",
+  backgroundSecondary: "#191919",
+  backgroundTertiary: "#ffffff",
 
-  chatBarBackground: "#121212",
-  chatBoxBorder: "grey",
-  textInputColor: "white",
-  textInputColorPlaceholder: "lightgrey",
+  buttonBackgroundColor: "#215cde",
+  buttonTextColor: "white",
+
+  textInputContainerColor: "green",
+  textInputBackgroundColor: "#121212",
+  textInputBorderColor: "grey",
+  textInputTextColor: "white",
+  textInputPlaceholderColor: "lightgrey",
+
+  textContainerColor: "green",
+  textBackgroundColor: "green",
+  textBorderColor: "green",
+  textColor: "white",
 
   waterColor: "#17263c",
 

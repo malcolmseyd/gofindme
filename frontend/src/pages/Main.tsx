@@ -1,11 +1,7 @@
-import {
-  ActivityIndicator,
-  Icon,
-  IconButton,
-  Stack,
-} from "@react-native-material/core";
 import React, { useContext, useState } from "react";
 import {
+  ActivityIndicator,
+  Button,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
@@ -54,7 +50,7 @@ interface Chat {
 type Message = LocationMessage | ChatMessage | PairedMessage | any;
 
 export default function Main(props: BasePageProps) {
-  const theme = useContext(ThemeContext) === "light" ? light : dark;
+  const theme = useContext(ThemeContext);
   const styles = StyleSheet.create({
     flexOne: {
       flex: 1,
@@ -74,22 +70,22 @@ export default function Main(props: BasePageProps) {
       alignItems: "center",
     },
     chatLoading: {
-      backgroundColor: theme.background,
+      backgroundColor: theme.backgroundPrimary,
     },
     messageHistory: {
       marginHorizontal: 5,
       width: "100%",
       flexGrow: 2,
-      backgroundColor: theme.background,
+      backgroundColor: theme.backgroundSecondary,
     },
     footer: {
-      backgroundColor: theme.chatBarBackground,
+      backgroundColor: theme.textInputContainerColor,
     },
     chatSendContainer: {
       margin: 2,
       alignItems: "center",
       height: 32,
-      backgroundColor: theme.chatBarBackground,
+      backgroundColor: theme.textInputBackgroundColor,
       width: "100%",
       borderRadius: 50,
       paddingLeft: 10,
@@ -98,7 +94,7 @@ export default function Main(props: BasePageProps) {
     },
     textInput: {
       flexGrow: 1,
-      color: theme.textInputColor,
+      color: theme.textInputTextColor,
     },
     textSend: {
       backgroundColor: "aquamarine",
@@ -251,7 +247,7 @@ export default function Main(props: BasePageProps) {
         <View style={styles.inner}>
           <StatusBar
             barStyle={theme.statusBar}
-            backgroundColor={theme.background}
+            backgroundColor={theme.backgroundPrimary}
           />
           <View style={styles.mapContainer}>
             <Map
@@ -275,33 +271,21 @@ export default function Main(props: BasePageProps) {
                 }}
               />
               <View style={styles.footer}>
-                <Stack direction="row" style={styles.chatSendContainer}>
-                  <TextInput
-                    placeholder="Enter a message..."
-                    placeholderTextColor={theme.textInputColorPlaceholder}
-                    style={styles.textInput}
-                    onChangeText={(value) => {
-                      setChatbox(value);
-                    }}
-                    onSubmitEditing={sendChatMessage}
-                    value={chatbox}
-                    blurOnSubmit={false}
-                    keyboardAppearance={theme.keyboardAppearance}
-                  />
-                  {chatbox !== "" && (
-                    <IconButton
-                      style={{
-                        width: 32,
-                        aspectRatio: 1,
-                        paddingRight: 0,
-                        backgroundColor: "grey",
-                        borderRadius: 50,
-                      }}
-                      icon={(props) => <Icon name="arrow-up" {...props} />}
-                      onPress={sendChatMessage}
-                    ></IconButton>
-                  )}
-                </Stack>
+                <TextInput
+                  placeholder="Enter a message..."
+                  placeholderTextColor={theme.textInputPlaceholderColor}
+                  style={styles.textInput}
+                  onChangeText={(value) => {
+                    setChatbox(value);
+                  }}
+                  onSubmitEditing={sendChatMessage}
+                  value={chatbox}
+                  blurOnSubmit={false}
+                  keyboardAppearance={theme.keyboardAppearance}
+                />
+                {chatbox !== "" && (
+                  <Button title="Send" onPress={sendChatMessage}></Button>
+                )}
               </View>
             </View>
           ) : (

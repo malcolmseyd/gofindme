@@ -1,17 +1,16 @@
-import { Switch } from "@react-native-material/core";
-
-export type Selection = "light" | "dark";
+import Theme from "../../themes/Theme";
+import light from "../../themes/Light";
+import dark from "../../themes/Dark";
+import { Switch } from "react-native";
 
 export interface ThemeSelectorProps {
-  selection: Selection;
-  updateSelectionCallback: (newSelection: Selection) => void;
+  selection: string;
+  updateSelectionCallback: (newSelection: Theme) => void;
 }
 
 const ThemeSelector = (props: ThemeSelectorProps) => {
   const toggle = () => {
-    props.updateSelectionCallback(
-      props.selection === "light" ? "dark" : "light"
-    );
+    props.updateSelectionCallback(props.selection === "light" ? dark : light);
   };
 
   return (
