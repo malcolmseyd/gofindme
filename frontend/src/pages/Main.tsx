@@ -184,7 +184,7 @@ export default function Main(props: BasePageProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.safeAreaView}>
+      <View style={styles.safeAreaView}>
         <StatusBar
           barStyle={theme.statusBar}
           backgroundColor={theme.backgroundPrimary}
@@ -241,7 +241,7 @@ export default function Main(props: BasePageProps) {
             <ActivityIndicator />
           )}
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
