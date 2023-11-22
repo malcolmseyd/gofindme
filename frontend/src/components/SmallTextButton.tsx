@@ -20,6 +20,7 @@ const SmallTextButton = (props: SmallTextButtonProps) => {
           ? theme.foregroundColorMuted
           : theme.foregroundColorVibrant,
       }}
+      disabed={props.disabled}
     >
       <Text
         style={{
