@@ -15,7 +15,7 @@ import { ThemeContext } from "../Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
 import style from "../styles/GlobalStyles";
-import TextButton from "../components/TextButton";
+import LargeTextButton from "../components/LargeTextButton";
 
 const QUEUE_SERVER = process.env.EXPO_PUBLIC_QUEUE_SERVER;
 
@@ -98,14 +98,13 @@ export default function Home(props: BasePageProps) {
               placeholderTextColor={theme.textInputPlaceholderColor}
               keyboardAppearance={theme.keyboardAppearance}
             />
-            <TextButton
+            <LargeTextButton
               onPress={() => {
                 getCookie();
               }}
-              styles={styles}
             >
               Search
-            </TextButton>
+            </LargeTextButton>
           </KeyboardAvoidingView>
         )}
       </SafeAreaView>

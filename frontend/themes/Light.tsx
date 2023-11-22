@@ -12,7 +12,7 @@ const light: Theme = {
   buttonBackgroundColor: "#2850d7",
   buttonTextColor: "white",
 
-  textInputContainerColor: "lightgrey",
+  textInputContainerColor: "#ffffff",
   textInputBackgroundColor: "lightgrey",
   textInputBorderColor: "grey",
   textInputTextColor: "black",

@@ -2,7 +2,7 @@ import { Pressable } from "react-native";
 
 export interface ButtonProps {
   children: any;
-  onPress(): undefined;
+  onPress(): void;
   buttonStyling: any;
 }
 

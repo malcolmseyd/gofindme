@@ -12,7 +12,7 @@ const dark: Theme = {
   buttonBackgroundColor: "#215cde",
   buttonTextColor: "white",
 
-  textInputContainerColor: "green",
+  textInputContainerColor: "#191919",
   textInputBackgroundColor: "#121212",
   textInputBorderColor: "grey",
   textInputTextColor: "white",

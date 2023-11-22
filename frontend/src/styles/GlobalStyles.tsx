@@ -19,9 +19,6 @@ const style = (props: StyleProps) => {
       width: "100%",
       height: "100%",
     },
-    alignItemsCenter: {
-      alignItems: "center",
-    },
     shortInputBox: {
       color: props.theme.textInputTextColor,
       borderColor: props.theme.textInputBorderColor,
@@ -32,9 +29,19 @@ const style = (props: StyleProps) => {
       margin: 10,
       width: 200,
       height: 30,
+      paddingHorizontal: 10,
     },
-    text: {
-      color: props.theme.textColor,
+    fullWidthInputBox: {
+      color: props.theme.textInputTextColor,
+      borderColor: props.theme.textInputBorderColor,
+      backgroundColor: props.theme.textInputBackgroundColor,
+      borderWidth: 1,
+      borderRadius: 20,
+      textAlign: "left",
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      flexGrow: 1,
+      flex: 1,
     },
     message: {
       color: props.theme.textColor,
@@ -43,13 +50,7 @@ const style = (props: StyleProps) => {
       color: props.theme.textColor,
       fontSize: 48,
     },
-    buttonStyling: {
-      color: props.theme.textColor,
-      backgroundColor: props.theme.buttonBackgroundColor,
-      width: 50,
-      height: 30,
-    },
-    defaultButtonBackground: {
+    largeButtonBackground: {
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: props.theme.buttonBackgroundColor,
@@ -57,9 +58,58 @@ const style = (props: StyleProps) => {
       width: 200,
       height: 50,
     },
-    defaultButtonText: {
+    largeButtonText: {
       color: props.theme.buttonTextColor,
       fontSize: 30,
+    },
+    smallButtonBackground: {
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: props.theme.buttonBackgroundColor,
+      borderRadius: 20,
+      width: "auto",
+      paddingHorizontal: 10,
+      height: 30,
+    },
+    smallButtonText: {
+      color: props.theme.buttonTextColor,
+      fontSize: 16,
+    },
+    mainPageMapContainer: {
+      width: "100%",
+      height: "50%",
+      flexGrow: 1,
+      backgroundColor: props.theme.waterColor,
+    },
+    mainPageChatContainer: {
+      height: "50%",
+      width: "100%",
+      alignItems: "center",
+      flexDirection: "column",
+    },
+    mainPageMessageHistory: {
+      width: "100%",
+      flexGrow: 2,
+    },
+    mainPageFooter: {
+      backgroundColor: props.theme.textInputContainerColor,
+      width: "100%",
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      alignItems: "center",
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      gap: 5,
+    },
+    chatMessageContainerBase: {
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 20,
+      marginHorizontal: 5,
+      marginBottom: 2,
+    },
+    chatMessageText: {
+      color: "white",
     },
   });
 };

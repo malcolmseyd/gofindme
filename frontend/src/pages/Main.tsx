@@ -21,6 +21,10 @@ import { ThemeContext } from "../Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
 import Map from "../components/Map";
+import style from "../styles/GlobalStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
+import LargeTextButton from "../components/LargeTextButton";
+import SmallTextButton from "../components/SmallTextButton";
 
 const SOCKET_SERVER = process.env.EXPO_PUBLIC_SOCKET_SERVER ?? "";
 
@@ -51,63 +55,7 @@ type Message = LocationMessage | ChatMessage | PairedMessage | any;
 
 export default function Main(props: BasePageProps) {
   const theme = useContext(ThemeContext);
-  const styles = StyleSheet.create({
-    flexOne: {
-      flex: 1,
-    },
-    inner: {
-      height: "100%",
-      flex: 1,
-    },
-    mapContainer: {
-      width: "100%",
-      height: "50%",
-      flexGrow: 1,
-      backgroundColor: theme.waterColor,
-    },
-    chat: {
-      height: "50%",
-      alignItems: "center",
-    },
-    chatLoading: {
-      backgroundColor: theme.backgroundPrimary,
-    },
-    messageHistory: {
-      marginHorizontal: 5,
-      width: "100%",
-      flexGrow: 2,
-      backgroundColor: theme.backgroundSecondary,
-    },
-    footer: {
-      backgroundColor: theme.textInputContainerColor,
-    },
-    chatSendContainer: {
-      margin: 2,
-      alignItems: "center",
-      height: 32,
-      backgroundColor: theme.textInputBackgroundColor,
-      width: "100%",
-      borderRadius: 50,
-      paddingLeft: 10,
-      borderColor: "grey",
-      borderWidth: 1,
-    },
-    textInput: {
-      flexGrow: 1,
-      color: theme.textInputTextColor,
-    },
-    textSend: {
-      backgroundColor: "aquamarine",
-    },
-    textSendIcon: {
-      color: "white",
-    },
-    chatItem: {
-      padding: 2,
-      marginHorizontal: 5,
-      marginVertical: 2,
-    },
-  });
+  const styles = style({ theme });
 
   const cookie = props.route.params.cookie;
   const name = props.route.params.name;
@@ -216,16 +164,12 @@ export default function Main(props: BasePageProps) {
   const renderChatItem = (e: any) => (
     <View
       style={{
+        ...styles.chatMessageContainerBase,
         alignSelf: e.item.sender === name ? "flex-end" : "flex-start",
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-        borderRadius: 50,
         backgroundColor: e.item.sender === name ? "blue" : "darkgrey",
-        marginHorizontal: 5,
-        marginBottom: 2,
       }}
     >
-      <Text style={{ color: "white" }}>
+      <Text style={styles.chatMessageText}>
         {e.item.sender}: {e.item.message}
       </Text>
     </View>
@@ -238,18 +182,18 @@ export default function Main(props: BasePageProps) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      style={styles.flexOne}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <StatusBar
-            barStyle={theme.statusBar}
-            backgroundColor={theme.backgroundPrimary}
-          />
-          <View style={styles.mapContainer}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.safeAreaView}>
+        <StatusBar
+          barStyle={theme.statusBar}
+          backgroundColor={theme.backgroundPrimary}
+        />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.keyboardAvoidingView}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+        >
+          <View style={styles.mainPageMapContainer}>
             <Map
               updateLocation={updateLoc}
               loc={loc}
@@ -260,9 +204,9 @@ export default function Main(props: BasePageProps) {
             />
           </View>
           {otherName ? (
-            <View style={styles.chat}>
+            <View style={styles.mainPageChatContainer}>
               <FlatList
-                style={styles.messageHistory}
+                style={styles.mainPageMessageHistory}
                 data={chatMessages}
                 renderItem={renderChatItem}
                 inverted
@@ -270,11 +214,11 @@ export default function Main(props: BasePageProps) {
                   flexDirection: "column-reverse",
                 }}
               />
-              <View style={styles.footer}>
+              <View style={styles.mainPageFooter}>
                 <TextInput
                   placeholder="Enter a message..."
                   placeholderTextColor={theme.textInputPlaceholderColor}
-                  style={styles.textInput}
+                  style={styles.fullWidthInputBox}
                   onChangeText={(value) => {
                     setChatbox(value);
                   }}
@@ -282,19 +226,21 @@ export default function Main(props: BasePageProps) {
                   value={chatbox}
                   blurOnSubmit={false}
                   keyboardAppearance={theme.keyboardAppearance}
+                  multiline
                 />
-                {chatbox !== "" && (
-                  <Button title="Send" onPress={sendChatMessage}></Button>
-                )}
+                <SmallTextButton
+                  onPress={sendChatMessage}
+                  disabled={chatbox === ""}
+                >
+                  Send
+                </SmallTextButton>
               </View>
             </View>
           ) : (
-            <View style={styles.chatLoading}>
-              <ActivityIndicator style={{ height: "50%" }} />
-            </View>
+            <ActivityIndicator />
           )}
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
