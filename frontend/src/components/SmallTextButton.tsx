@@ -14,9 +14,23 @@ const SmallTextButton = (props: SmallTextButtonProps) => {
   return (
     <Button
       onPress={props.onPress}
-      buttonStyling={styles.smallButtonBackground}
+      buttonStyling={{
+        ...styles.smallButtonBackground,
+        backgroundColor: props.disabled
+          ? theme.foregroundColorMuted
+          : theme.foregroundColorVibrant,
+      }}
     >
-      <Text style={styles.smallButtonText}>{props.children}</Text>
+      <Text
+        style={{
+          ...styles.smallButtonText,
+          color: props.disabled
+            ? theme.foregroundTextColorMuted
+            : theme.foregroundTextColorVibrant,
+        }}
+      >
+        {props.children}
+      </Text>
     </Button>
   );
 };

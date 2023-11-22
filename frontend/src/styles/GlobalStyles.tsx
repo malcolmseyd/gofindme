@@ -53,7 +53,7 @@ const style = (props: StyleProps) => {
     largeButtonBackground: {
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: props.theme.buttonBackgroundColor,
+      backgroundColor: props.theme.foregroundColorVibrant,
       borderRadius: 20,
       width: 200,
       height: 50,
@@ -65,14 +65,12 @@ const style = (props: StyleProps) => {
     smallButtonBackground: {
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: props.theme.buttonBackgroundColor,
       borderRadius: 20,
       width: "auto",
       paddingHorizontal: 10,
       height: 30,
     },
     smallButtonText: {
-      color: props.theme.buttonTextColor,
       fontSize: 16,
     },
     mainPageMapContainer: {

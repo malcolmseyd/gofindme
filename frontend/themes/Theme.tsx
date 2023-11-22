@@ -8,7 +8,10 @@ export default interface Theme {
   backgroundSecondary: string;
   backgroundTertiary: string;
 
-  buttonBackgroundColor: string;
+  foregroundColorVibrant: string;
+  foregroundTextColorVibrant: string;
+  foregroundColorMuted: string;
+  foregroundTextColorMuted: string;
   buttonTextColor: string;
 
   // text input

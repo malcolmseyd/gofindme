@@ -9,7 +9,10 @@ const light: Theme = {
   backgroundSecondary: "#ffffff",
   backgroundTertiary: "#ffffff",
 
-  buttonBackgroundColor: "#2850d7",
+  foregroundColorVibrant: "#2850d7",
+  foregroundTextColorVibrant: "white",
+  foregroundColorMuted: "lightgrey",
+  foregroundTextColorMuted: "black",
   buttonTextColor: "white",
 
   textInputContainerColor: "#ffffff",

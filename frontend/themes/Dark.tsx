@@ -9,7 +9,10 @@ const dark: Theme = {
   backgroundSecondary: "#191919",
   backgroundTertiary: "#ffffff",
 
-  buttonBackgroundColor: "#215cde",
+  foregroundColorVibrant: "#386de1",
+  foregroundTextColorVibrant: "white",
+  foregroundColorMuted: "#858585",
+  foregroundTextColorMuted: "black",
   buttonTextColor: "white",
 
   textInputContainerColor: "#191919",

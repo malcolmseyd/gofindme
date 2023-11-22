@@ -166,7 +166,8 @@ export default function Main(props: BasePageProps) {
       style={{
         ...styles.chatMessageContainerBase,
         alignSelf: e.item.sender === name ? "flex-end" : "flex-start",
-        backgroundColor: e.item.sender === name ? "blue" : "darkgrey",
+        backgroundColor:
+          e.item.sender === name ? theme.foregroundColorVibrant : "#858585",
       }}
     >
       <Text style={styles.chatMessageText}>
