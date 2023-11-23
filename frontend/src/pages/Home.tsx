@@ -75,7 +75,7 @@ export default function Home(props: BasePageProps) {
           backgroundColor={theme.backgroundPrimary}
         />
         {spinner ? (
-          <ActivityIndicator />
+          <ActivityIndicator color={theme.textColor} />
         ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}

@@ -5,6 +5,8 @@ const dark: Theme = {
   keyboardAppearance: "dark",
   statusBar: "light-content",
 
+  isDarkTheme: true,
+
   backgroundPrimary: "#121212",
   backgroundSecondary: "#191919",
   backgroundTertiary: "#ffffff",

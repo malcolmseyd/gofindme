@@ -47,6 +47,7 @@ interface LocationMessage extends BaseMessage {
 }
 
 interface Chat {
+  type: "message" | "spacer";
   sender: string;
   message: string;
 }
@@ -68,7 +69,13 @@ export default function Main(props: BasePageProps) {
   const [otherLoc, setOtherLocation] = useState<BasicLocation | undefined>(
     undefined
   );
-  const [chatMessages, setChatMessages] = useState<Array<Chat>>([]);
+  const [chatMessages, setChatMessages] = useState<Array<Chat>>([
+    {
+      type: "spacer",
+      message: "",
+      sender: "",
+    },
+  ]);
   const [chatbox, setChatbox] = useState<string>("");
 
   const [mapRef, setMapRef] = useState<MapView | undefined>();
@@ -112,6 +119,7 @@ export default function Main(props: BasePageProps) {
         setChatMessages([
           ...chatMessages,
           {
+            type: "message",
             sender: otherName,
             message: data.msg,
           },
@@ -153,27 +161,35 @@ export default function Main(props: BasePageProps) {
     setChatMessages([
       ...chatMessages,
       {
+        type: "message",
         sender: name,
         message: chatbox,
       },
     ]);
     setChatbox("");
-    console.log("chatbox: " + chatbox);
   };
 
   const renderChatItem = (e: any) => (
-    <View
-      style={{
-        ...styles.chatMessageContainerBase,
-        alignSelf: e.item.sender === name ? "flex-end" : "flex-start",
-        backgroundColor:
-          e.item.sender === name ? theme.foregroundColorVibrant : "#858585",
-      }}
-    >
-      <Text style={styles.chatMessageText}>
-        {e.item.sender}: {e.item.message}
-      </Text>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {e.item.type === "spacer" ? (
+        <View
+          style={{ height: 10, backgroundColor: theme.backgroundPrimary }}
+        ></View>
+      ) : (
+        <View
+          style={{
+            ...styles.chatMessageContainerBase,
+            alignSelf: e.item.sender === name ? "flex-end" : "flex-start",
+            backgroundColor:
+              e.item.sender === name ? theme.foregroundColorVibrant : "#858585",
+          }}
+        >
+          <Text style={styles.chatMessageText}>
+            {e.item.sender}: {e.item.message}
+          </Text>
+        </View>
+      )}
+    </TouchableWithoutFeedback>
   );
 
   const updateMapRef = (mapView: MapView | null) => {
@@ -183,17 +199,17 @@ export default function Main(props: BasePageProps) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.safeAreaView}>
-        <StatusBar
-          barStyle={theme.statusBar}
-          backgroundColor={theme.backgroundPrimary}
-        />
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.keyboardAvoidingView}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
+    <View style={styles.safeAreaView}>
+      <StatusBar
+        barStyle={theme.statusBar}
+        backgroundColor={theme.backgroundPrimary}
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.mainPageMapContainer}>
             <Map
               updateLocation={updateLoc}
@@ -204,44 +220,44 @@ export default function Main(props: BasePageProps) {
               mapStyle={theme.mapStyle}
             />
           </View>
-          {otherName ? (
-            <View style={styles.mainPageChatContainer}>
-              <FlatList
-                style={styles.mainPageMessageHistory}
-                data={chatMessages}
-                renderItem={renderChatItem}
-                inverted
-                contentContainerStyle={{
-                  flexDirection: "column-reverse",
+        </TouchableWithoutFeedback>
+        {otherName ? (
+          <View style={styles.mainPageChatContainer}>
+            <FlatList
+              style={styles.mainPageMessageHistory}
+              data={chatMessages}
+              renderItem={renderChatItem}
+              inverted
+              contentContainerStyle={{
+                flexDirection: "column-reverse",
+              }}
+            />
+            <View style={styles.mainPageFooter}>
+              <TextInput
+                placeholder="Enter a message..."
+                placeholderTextColor={theme.textInputPlaceholderColor}
+                style={styles.fullWidthInputBox}
+                onChangeText={(value) => {
+                  setChatbox(value);
                 }}
+                onSubmitEditing={sendChatMessage}
+                value={chatbox}
+                blurOnSubmit={false}
+                keyboardAppearance={theme.keyboardAppearance}
+                multiline
               />
-              <View style={styles.mainPageFooter}>
-                <TextInput
-                  placeholder="Enter a message..."
-                  placeholderTextColor={theme.textInputPlaceholderColor}
-                  style={styles.fullWidthInputBox}
-                  onChangeText={(value) => {
-                    setChatbox(value);
-                  }}
-                  onSubmitEditing={sendChatMessage}
-                  value={chatbox}
-                  blurOnSubmit={false}
-                  keyboardAppearance={theme.keyboardAppearance}
-                  multiline
-                />
-                <SmallTextButton
-                  onPress={sendChatMessage}
-                  disabled={chatbox === ""}
-                >
-                  Send
-                </SmallTextButton>
-              </View>
+              <SmallTextButton
+                onPress={sendChatMessage}
+                disabled={chatbox === ""}
+              >
+                Send
+              </SmallTextButton>
             </View>
-          ) : (
-            <ActivityIndicator />
-          )}
-        </KeyboardAvoidingView>
-      </View>
-    </TouchableWithoutFeedback>
+          </View>
+        ) : (
+          <ActivityIndicator />
+        )}
+      </KeyboardAvoidingView>
+    </View>
   );
 }

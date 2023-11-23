@@ -97,6 +97,7 @@ const style = (props: StyleProps) => {
       alignItems: "center",
       paddingHorizontal: 10,
       paddingVertical: 5,
+      marginTop: 5,
       gap: 5,
     },
     chatMessageContainerBase: {

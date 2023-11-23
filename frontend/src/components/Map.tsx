@@ -57,7 +57,7 @@ const Map = (props: MapProps) => {
           onUserLocationChange={locChanged}
           provider="google"
           customMapStyle={props.mapStyle}
-          mapType={"hybrid"}
+          mapType={"standard"}
         >
           {props.otherLoc && (
             <Marker key={0} coordinate={props.otherLoc} title={props.otherName}>

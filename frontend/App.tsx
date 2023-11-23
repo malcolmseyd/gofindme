@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationContainer } from "@react-navigation/native";
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
@@ -87,7 +87,19 @@ export default function App() {
         </Text>
       )}
       {!state.err && (
-        <NavigationContainer>
+        <NavigationContainer
+          theme={{
+            dark: themeSelection.isDarkTheme,
+            colors: {
+              primary: themeSelection.foregroundColorVibrant,
+              background: themeSelection.backgroundPrimary,
+              card: "green",
+              text: themeSelection.textColor,
+              border: "green",
+              notification: "green",
+            },
+          }}
+        >
           <Stack.Navigator>
             <Stack.Screen
               name="Home"

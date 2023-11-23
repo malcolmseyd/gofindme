@@ -2,6 +2,8 @@ export default interface Theme {
   keyboardAppearance: "default" | "light" | "dark";
   statusBar: "default" | "light-content" | "dark-content";
 
+  isDarkTheme: boolean;
+
   stringValue: string;
 
   backgroundPrimary: string;
