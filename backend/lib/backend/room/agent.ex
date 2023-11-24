@@ -21,17 +21,19 @@ defmodule Backend.Room.Agent do
     end
   end
 
-  def broadcast_message(room, session_id, message) do
+  def broadcast_chat(room, from_id, message) do
+    sent = DateTime.utc_now()
+
     Agent.get(room, fn set -> set end)
-    |> Enum.each(fn id ->
-      Backend.Socket.Agent.send_info(id, {:message, session_id, message})
+    |> Enum.each(fn to_id ->
+      Backend.Socket.Agent.send_info(to_id, {:chat, from_id, {message, sent}})
     end)
   end
 
-  def broadcast_location(room, session_id, location) do
+  def broadcast_location(room, from_id, location) do
     Agent.get(room, fn set -> set end)
-    |> Enum.each(fn id ->
-      Backend.Socket.Agent.send_info(id, {:location, session_id, location})
+    |> Enum.each(fn to_id ->
+      Backend.Socket.Agent.send_info(to_id, {:location, from_id, location})
     end)
   end
 end

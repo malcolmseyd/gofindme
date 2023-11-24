@@ -7,11 +7,14 @@ defmodule Backend.Socket.Handler do
   alias Backend.Schema
 
   def handle_message(%{"type" => "chat", "msg" => msg}, state) do
-    # respond with a timestamped echo
-    now = DateTime.utc_now()
+    session = state.session
+    room = state[:room]
 
-    json_map(type: "chat", msg: msg, sent: now)
-    |> reply_json(state)
+    if room do
+      Room.Agent.broadcast_chat(room, session.id, msg)
+    end
+
+    {:ok, state}
   end
 
   def handle_message(%{"type" => "keep_alive"}, state) do
@@ -25,12 +28,13 @@ defmodule Backend.Socket.Handler do
       ) do
     Logger.debug(msg: "location_update", lat: lat, long: long)
 
+    session = state.session
     room = state[:room]
 
     if room do
-      Room.Agent.broadcast_location(room, state.session.id, {lat, long})
+      Room.Agent.broadcast_location(room, session.id, {lat, long})
     else
-      %{latitude: lat, longitude: long, session_id: state.session.id}
+      %{latitude: lat, longitude: long, session_id: session.id}
       |> Schema.Queuing.create_changeset()
       |> Repo.insert_or_update!(
         conflict_target: [:session_id],

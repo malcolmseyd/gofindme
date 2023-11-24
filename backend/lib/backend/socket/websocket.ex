@@ -59,9 +59,19 @@ defmodule Backend.Socket.Websocket do
   end
 
   @impl :cowboy_websocket
-  def websocket_info({:location, session_id, {lat, long}}, state) do
-    if session_id !== state.session.id do
+  def websocket_info({:location, from_id, {lat, long}}, state) do
+    if from_id !== state.session.id do
       json_map(type: "location_update", lat: lat, long: long)
+      |> reply_json(state)
+    else
+      {:ok, state}
+    end
+  end
+
+  @impl :cowboy_websocket
+  def websocket_info({:chat, from_id, {message, sent}}, state) do
+    if from_id !== state.session.id do
+      json_map(type: "chat", msg: message, sent: sent)
       |> reply_json(state)
     else
       {:ok, state}
