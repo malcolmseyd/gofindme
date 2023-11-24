@@ -9,6 +9,7 @@ defmodule Backend.Application do
     children = [
       Backend.Matchmaking,
       Backend.Repo,
+      Backend.Room.Supervisor,
       Backend.Socket.Agent,
       {Plug.Cowboy, scheme: :http, plug: Backend.Router, options: [port: 8080]}
     ]

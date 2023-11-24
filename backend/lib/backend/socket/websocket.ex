@@ -1,6 +1,8 @@
 defmodule Backend.Socket.Websocket do
+  alias Backend.Schema
   require Logger
   import Jason.Helpers, only: [json_map: 1]
+  import Ecto.Query, only: [from: 2]
 
   # https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket
   @behaviour :cowboy_websocket
@@ -25,8 +27,6 @@ defmodule Backend.Socket.Websocket do
 
     Logger.debug("new websocket connection")
 
-    :timer.send_after(5000, :paired)
-
     json_map(type: "searching")
     |> reply_json(state)
   end
@@ -50,13 +50,11 @@ defmodule Backend.Socket.Websocket do
   end
 
   @impl :cowboy_websocket
-  def websocket_info(:paired, state) do
-    # setup mocked location updates
-    send(self(), :mock_location)
-    ticker_ref = :timer.send_interval(1000, :mock_location)
-    state = state |> Map.put(:ticker_ref, ticker_ref)
+  def websocket_info({:paired, room, session_id}, state) do
+    state = Map.put(state, :room, room)
+    user = Backend.Repo.get!(Backend.Schema.Session, session_id)
 
-    json_map(type: "paired", name: "Mr. Mock")
+    json_map(type: "paired", name: user.name)
     |> reply_json(state)
   end
 
@@ -84,13 +82,21 @@ defmodule Backend.Socket.Websocket do
         Logger.debug(websocket_terminated: reason)
     end
 
-    %{
-      ticker_ref: ticker_ref,
-      session: session
-    } = state
-
-    :timer.cancel(ticker_ref)
+    session = state.session
     Backend.Socket.Agent.remove(session.id)
+
+    room = state[:room]
+
+    if room != nil do
+      Backend.Room.Agent.leave_room(room, session.id)
+    end
+
+    Backend.Repo.delete_all(
+      from(
+        q in Schema.Queuing,
+        where: q.id == ^session.id
+      )
+    )
 
     :ok
   end
