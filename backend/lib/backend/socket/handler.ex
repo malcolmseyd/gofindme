@@ -50,6 +50,37 @@ defmodule Backend.Socket.Handler do
     {:ok, state}
   end
 
+  def handle_info({:paired, room, session_id}, state) do
+    state = Map.put(state, :room, room)
+    user = Backend.Repo.get!(Backend.Schema.Session, session_id)
+
+    json_map(type: "paired", name: user.name)
+    |> reply_json(state)
+  end
+
+  def handle_info({:location, from_id, {lat, long}}, state) do
+    if from_id !== state.session.id do
+      json_map(type: "location_update", lat: lat, long: long)
+      |> reply_json(state)
+    else
+      {:ok, state}
+    end
+  end
+
+  def handle_info({:chat, from_id, {message, sent}}, state) do
+    if from_id !== state.session.id do
+      json_map(type: "chat", msg: message, sent: sent)
+      |> reply_json(state)
+    else
+      {:ok, state}
+    end
+  end
+
+  def handle_info(info, state) do
+    Logger.debug(unhandled_websocket_info: info)
+    {:ok, state}
+  end
+
   defp reply_text(text, state) do
     {:reply, {:text, text}, state}
   end

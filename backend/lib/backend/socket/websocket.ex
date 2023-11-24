@@ -50,38 +50,8 @@ defmodule Backend.Socket.Websocket do
   end
 
   @impl :cowboy_websocket
-  def websocket_info({:paired, room, session_id}, state) do
-    state = Map.put(state, :room, room)
-    user = Backend.Repo.get!(Backend.Schema.Session, session_id)
-
-    json_map(type: "paired", name: user.name)
-    |> reply_json(state)
-  end
-
-  @impl :cowboy_websocket
-  def websocket_info({:location, from_id, {lat, long}}, state) do
-    if from_id !== state.session.id do
-      json_map(type: "location_update", lat: lat, long: long)
-      |> reply_json(state)
-    else
-      {:ok, state}
-    end
-  end
-
-  @impl :cowboy_websocket
-  def websocket_info({:chat, from_id, {message, sent}}, state) do
-    if from_id !== state.session.id do
-      json_map(type: "chat", msg: message, sent: sent)
-      |> reply_json(state)
-    else
-      {:ok, state}
-    end
-  end
-
-  @impl :cowboy_websocket
   def websocket_info(info, state) do
-    Logger.debug(unhandled_websocket_info: info)
-    {:ok, state}
+    Backend.Socket.Handler.handle_info(info, state)
   end
 
   @impl :cowboy_websocket
