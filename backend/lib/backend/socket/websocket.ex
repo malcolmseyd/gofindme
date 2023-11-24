@@ -59,11 +59,13 @@ defmodule Backend.Socket.Websocket do
   end
 
   @impl :cowboy_websocket
-  def websocket_info(:mock_location, state) do
-    {lat, long} = mock_coords()
-
-    json_map(type: "location_update", lat: lat, long: long)
-    |> reply_json(state)
+  def websocket_info({:location, session_id, {lat, long}}, state) do
+    if session_id !== state.session.id do
+      json_map(type: "location_update", lat: lat, long: long)
+      |> reply_json(state)
+    else
+      {:ok, state}
+    end
   end
 
   @impl :cowboy_websocket
@@ -99,13 +101,6 @@ defmodule Backend.Socket.Websocket do
     )
 
     :ok
-  end
-
-  defp mock_coords() do
-    {lat, long} = {48.463987, -123.303246}
-    lat = lat + (:rand.uniform() - 0.5) * 0.01
-    long = long + (:rand.uniform() - 0.5) * 0.01
-    {lat, long}
   end
 
   defp reply_text(text, state) do

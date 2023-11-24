@@ -3,6 +3,7 @@ defmodule Backend.Socket.Handler do
   import Jason.Helpers, only: [json_map: 1]
 
   alias Backend.Repo
+  alias Backend.Room
   alias Backend.Schema
 
   def handle_message(%{"type" => "chat", "msg" => msg}, state) do
@@ -20,16 +21,22 @@ defmodule Backend.Socket.Handler do
 
   def handle_message(
         %{"type" => "location_update", "lat" => lat, "long" => long},
-        state = %{session: session}
+        state
       ) do
     Logger.debug(msg: "location_update", lat: lat, long: long)
 
-    %{latitude: lat, longitude: long, session_id: session.id}
-    |> Schema.Queuing.create_changeset()
-    |> Repo.insert_or_update!(
-      conflict_target: [:session_id],
-      on_conflict: {:replace, [:latitude, :longitude]}
-    )
+    room = state[:room]
+
+    if room do
+      Room.Agent.broadcast_location(room, state.session.id, {lat, long})
+    else
+      %{latitude: lat, longitude: long, session_id: state.session.id}
+      |> Schema.Queuing.create_changeset()
+      |> Repo.insert_or_update!(
+        conflict_target: [:session_id],
+        on_conflict: {:replace, [:latitude, :longitude]}
+      )
+    end
 
     {:ok, state}
   end
