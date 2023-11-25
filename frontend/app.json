@@ -26,7 +26,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.gofindme.frontend"
+      "package": "com.gofindme.frontend",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAkx2XR3ZlI--0N3delgFN2q5nsz0H6XFc"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
