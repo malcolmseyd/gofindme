@@ -17,5 +17,7 @@ jobs:
         run: npm install -g eas-cli@5.9.1
       - name: Install dependencies
         run: npx expo install
+        working-directory: frontend
       - name: EAS Build
         run: eas build --platform android --profile preview --local
+        working-directory: frontend
