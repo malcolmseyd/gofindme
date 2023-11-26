@@ -18,4 +18,4 @@ jobs:
       - name: Install dependencies
         run: npx expo install
       - name: EAS Build
-          run: eas build --platform android --profile preview --local
+        run: eas build --platform android --profile preview --local
