@@ -1,13 +1,11 @@
 import React, { useContext, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
-  StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
@@ -15,15 +13,11 @@ import {
 } from "react-native";
 import MapView, { Region } from "react-native-maps";
 import useWebSocket from "react-use-websocket";
-import dark from "../../themes/Dark";
-import light from "../../themes/Light";
 import { ThemeContext } from "../Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
 import Map from "../components/Map";
 import style from "../styles/GlobalStyles";
-import { SafeAreaView } from "react-native-safe-area-context";
-import LargeTextButton from "../components/LargeTextButton";
 import SmallTextButton from "../components/SmallTextButton";
 
 const SOCKET_SERVER = process.env.EXPO_PUBLIC_SOCKET_SERVER ?? "";
@@ -58,7 +52,6 @@ export default function Main(props: BasePageProps) {
   const theme = useContext(ThemeContext);
   const styles = style({ theme });
 
-  const cookie = props.route.params.cookie;
   const name = props.route.params.name;
 
   const [loc, setLoc] = useState<BasicLocation | undefined>(

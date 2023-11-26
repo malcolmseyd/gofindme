@@ -9,6 +9,9 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+android/local.properties
+build*
+gofindme*.apk
 
 # macOS
 .DS_Store

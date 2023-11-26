@@ -31,40 +31,49 @@ export default function Home(props: BasePageProps) {
 
   const getCookie = async () => {
     setSpinner(true);
-    let loc: BasicLocation = await Location.getCurrentPositionAsync().then(
-      (data) => {
-        return {
-          latitude: data.coords.latitude,
-          longitude: data.coords.longitude,
-        };
-      }
-    );
-    console.log(`queue server: ${QUEUE_SERVER}`);
-
-    let res = await fetch(QUEUE_SERVER ?? "", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-      }),
-    });
-
-    // console.log(res);
-    if (res.status == 200) {
-      let cookie = await res.headers.get("set-cookie");
-      props.navigation.navigate("Main", {
-        cookie,
-        name,
-        loc,
+    let loc: BasicLocation | undefined =
+      await Location.getLastKnownPositionAsync().then((data) => {
+        if (data) {
+          return {
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude,
+          };
+        } else {
+          setMsg("Could not get location");
+        }
       });
-    } else {
-      setMsg(await res.text());
-    }
+    console.log(`queue server: ${QUEUE_SERVER}`);
+    if (loc) {
+      console.log("location found, sending POST request");
+      let res = await fetch(QUEUE_SERVER ?? "", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+        }),
+      });
 
-    setSpinner(false);
-    console.log(res.status);
+      console.log("got response");
+      console.log(res);
+      if (res.status == 200) {
+        let cookie = await res.headers.get("set-cookie");
+        props.navigation.navigate("Main", {
+          cookie,
+          name,
+          loc,
+        });
+      } else {
+        console.log("non-200 status code");
+        setMsg(await res.text());
+      }
+
+      setSpinner(false);
+      console.log(res.status);
+    } else {
+      console.log("could not get location");
+    }
   };
 
   return (

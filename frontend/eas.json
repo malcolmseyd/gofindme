@@ -13,7 +13,8 @@
       },
       "env": {
         "EXPO_PUBLIC_QUEUE_SERVER": "https://3szf3hwv43e5h7wv4sfkxlrsxq.srv.us/start",
-        "EXPO_PUBLIC_SOCKET_SERVER": "wss://3szf3hwv43e5h7wv4sfkxlrsxq.srv.us/socket"
+        "EXPO_PUBLIC_SOCKET_SERVER": "wss://3szf3hwv43e5h7wv4sfkxlrsxq.srv.us/socket",
+        "ANDROID_HOME": "/home/brennan/android"
       }
     },
     "production": {}
