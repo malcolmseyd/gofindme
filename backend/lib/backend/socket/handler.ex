@@ -76,6 +76,13 @@ defmodule Backend.Socket.Handler do
     end
   end
 
+  def handle_info(:unpaired, state) do
+    state = Map.delete(state, :room)
+
+    json_map(type: "unpaired")
+    |> reply_json(state)
+  end
+
   def handle_info(info, state) do
     Logger.debug(unhandled_websocket_info: info)
     {:ok, state}
