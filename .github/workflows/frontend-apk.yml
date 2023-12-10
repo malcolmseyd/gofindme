@@ -1,26 +1,27 @@
-name: Frontend
-run-name: Builds a frontend APK
-on: [push]
+name: EAS Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
-  build-apk:
+  build:
+    name: Install and build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-node@v3
         with:
-          distribution: "adopt"
-          java-version: "11"
-      - uses: actions/setup-node@v2
+          node-version: 18.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
         with:
-          node-version: "18"
-      - name: Install EAS CLI
-        run: npm install -g eas-cli@5.9.1
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: frontend
-      - name: Install expo libraries
-        run: npx expo install
-        working-directory: frontend
-      - name: EAS Build
-        run: eas build --platform android --profile preview --local
+      - name: Build on EAS
+        run: eas build --platform all --non-interactive
         working-directory: frontend
