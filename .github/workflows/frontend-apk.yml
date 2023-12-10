@@ -11,7 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        working-directory: frontend
         with:
           node-version: 18.x
           cache: npm
