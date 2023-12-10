@@ -11,6 +11,6 @@ config :backend, Backend.Repo,
   ssl_opts: [
     server_name_indication: to_charlist(System.get_env("DB_HOST")),
     verify: :verify_peer,
-    cacertfile: "/etc/ssl/certs/ca-certificates.crt",
+    cacertfile: System.get_env("DB_CERT", "/etc/ssl/certs/ca-certificates.crt"),
     customize_hostname_check: [match_fun: :public_key.pkix_verify_hostname_match_fun(:https)]
   ]
