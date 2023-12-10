@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import Button, { ButtonProps } from "./Button";
 import { Text } from "react-native";
-import { ThemeContext } from "../Contexts";
+import { ThemeContext } from "../utils/Contexts";
 import style from "../styles/GlobalStyles";
 
 type SmallTextButtonProps = Pick<ButtonProps, "children" | "onPress"> & {
   disabled?: boolean;
+  type?: "primary" | "secondary";
 };
 
 const SmallTextButton = (props: SmallTextButtonProps) => {
@@ -16,7 +17,7 @@ const SmallTextButton = (props: SmallTextButtonProps) => {
       onPress={props.onPress}
       buttonStyling={{
         ...styles.smallButtonBackground,
-        backgroundColor: props.disabled
+        backgroundColor: props.disabled || props.type === "secondary"
           ? theme.foregroundColorMuted
           : theme.foregroundColorVibrant,
       }}

@@ -18,6 +18,7 @@ const style = (props: StyleProps) => {
       justifyContent: "center",
       width: "100%",
       height: "100%",
+      gap: 10,
     },
     shortInputBox: {
       color: props.theme.textInputTextColor,
@@ -26,8 +27,7 @@ const style = (props: StyleProps) => {
       borderWidth: 1,
       borderRadius: 50,
       textAlign: "center",
-      margin: 10,
-      width: 200,
+      width: "70%",
       height: 30,
       paddingHorizontal: 10,
     },
@@ -45,6 +45,7 @@ const style = (props: StyleProps) => {
     },
     message: {
       color: props.theme.textColor,
+      maxWidth: "80%",
     },
     title: {
       color: props.theme.textColor,
@@ -85,6 +86,12 @@ const style = (props: StyleProps) => {
       alignItems: "center",
       flexDirection: "column",
     },
+    mainPageSpinnerContainer: {
+      height: "50%",
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
     mainPageMessageHistory: {
       width: "100%",
       flexGrow: 2,
@@ -97,7 +104,7 @@ const style = (props: StyleProps) => {
       alignItems: "center",
       paddingHorizontal: 10,
       paddingVertical: 5,
-      marginTop: 5,
+      marginVertical: 5,
       gap: 5,
     },
     chatMessageContainerBase: {

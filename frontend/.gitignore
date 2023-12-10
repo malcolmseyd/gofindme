@@ -12,6 +12,7 @@ web-build/
 android/local.properties
 build*
 gofindme*.apk
+.env*
 
 # macOS
 .DS_Store

@@ -1,5 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import MapView, {
+  MapType,
   Marker,
   Region,
   UserLocationChangeEvent,
@@ -7,6 +8,7 @@ import MapView, {
 import { StyleSheet, Image, ActivityIndicator } from "react-native";
 import * as Location from "expo-location";
 import { BasicLocation } from "../common/BasicLocation";
+import { getMapType } from "../utils/SettingsProvider";
 
 export interface MapProps {
   updateLocation: (loc: BasicLocation) => void;
@@ -18,7 +20,13 @@ export interface MapProps {
 }
 
 const Map = (props: MapProps) => {
-  const [loc, setLoc] = React.useState<BasicLocation | undefined>(undefined);
+  const [mapType, setMapType] = useState<MapType>("standard");
+
+  getMapType().then((type) => {
+    if (type) {
+      setMapType(type);
+    }
+  });
 
   function region(): Region | undefined {
     if (props.loc) {
@@ -57,15 +65,14 @@ const Map = (props: MapProps) => {
           onUserLocationChange={locChanged}
           provider="google"
           customMapStyle={props.mapStyle}
-          mapType={"standard"}
+          mapType={mapType}
         >
           {props.otherLoc && (
-            <Marker key={0} coordinate={props.otherLoc} title={props.otherName}>
-              <Image
-                source={require("../../assets/stinky.png")}
-                style={{ height: 20, width: 20 }}
-              />
-            </Marker>
+            <Marker
+              key={0}
+              coordinate={props.otherLoc}
+              title={props.otherName}
+            />
           )}
         </MapView>
       )}

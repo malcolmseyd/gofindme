@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
@@ -7,17 +7,18 @@ import {
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text } from "react-native";
-// import Config from "react-native-config";
-import { ThemeContext } from "./src/Contexts";
+import { Text } from "react-native";
 import Footer from "./src/components/Footer";
 import ThemeSelector from "./src/components/ThemeSelector";
 import Home from "./src/pages/Home";
 import Main from "./src/pages/Main";
+import Settings from "./src/pages/Settings";
+import style from "./src/styles/GlobalStyles";
+import { ThemeContext } from "./src/utils/Contexts";
+import dark from "./themes/Dark";
 import light from "./themes/Light";
 import Theme from "./themes/Theme";
-import dark from "./themes/Dark";
-import style from "./src/styles/GlobalStyles";
+import { getConnectionDetails } from "./src/utils/SettingsProvider";
 
 interface State {
   err: string | undefined;
@@ -37,6 +38,8 @@ export default function App() {
     AsyncStorage.setItem("@theme", newThemeSelection.stringValue);
     setThemeSelection(newThemeSelection);
   };
+
+  const connectionInfo = getConnectionDetails();
 
   useEffect(() => {
     (async () => {
@@ -61,13 +64,7 @@ export default function App() {
       headerStyle: {
         backgroundColor: themeSelection.backgroundSecondary,
       },
-      headerTitle: (props: any) => (
-        // <Image
-        //   style={{ width: 50, height: 50 }}
-        //   source={require("./assets/stinky.png")}
-        // />
-        <Text style={styles.message}>GoFindMe</Text>
-      ),
+      headerTitle: (props: any) => <Text style={styles.message}>GoFindMe</Text>,
       headerRight: () => (
         <ThemeSelector
           selection={themeSelection.stringValue}
@@ -111,6 +108,11 @@ export default function App() {
               component={Main}
               options={globalHeaderOptions()}
             />
+            <Stack.Screen
+              name="Settings"
+              component={Settings}
+              options={globalHeaderOptions()}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       )}
@@ -118,12 +120,3 @@ export default function App() {
     </ThemeContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

@@ -13,7 +13,7 @@ const light: Theme = {
 
   foregroundColorVibrant: "#2850d7",
   foregroundTextColorVibrant: "white",
-  foregroundColorMuted: "lightgrey",
+  foregroundColorMuted: "grey",
   foregroundTextColorMuted: "black",
   buttonTextColor: "white",
 

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import Button, { ButtonProps } from "./Button";
 import { Text } from "react-native";
 import style from "../styles/GlobalStyles";
-import { ThemeContext } from "../Contexts";
+import { ThemeContext } from "../utils/Contexts";
 
 interface TextButtonStyles {
   largeButtonBackground: any;

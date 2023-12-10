@@ -11,69 +11,84 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemeContext } from "../Contexts";
+import { ThemeContext } from "../utils/Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
 import style from "../styles/GlobalStyles";
 import LargeTextButton from "../components/LargeTextButton";
-
-const QUEUE_SERVER = process.env.EXPO_PUBLIC_QUEUE_SERVER;
-
-const MESSAGE = "";
+import SmallTextButton from "../components/SmallTextButton";
+import { getConnectionDetails } from "../utils/SettingsProvider";
 
 export default function Home(props: BasePageProps) {
   const theme = useContext(ThemeContext);
   const styles = style({ theme });
 
-  const [msg, setMsg] = useState(MESSAGE);
+  const [msg, setMsg] = useState("");
   const [name, setName] = useState("");
   const [spinner, setSpinner] = useState(false);
 
+  const getLocation = async () => {
+    return Location.getLastKnownPositionAsync().then((data) => {
+      if (data) {
+        return {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude,
+        };
+      } else {
+        setMsg("Could not get location");
+      }
+    });
+  };
+
   const getCookie = async () => {
     setSpinner(true);
-    let loc: BasicLocation | undefined =
-      await Location.getLastKnownPositionAsync().then((data) => {
-        if (data) {
-          return {
-            latitude: data.coords.latitude,
-            longitude: data.coords.longitude,
-          };
-        } else {
-          setMsg("Could not get location");
-        }
-      });
-    console.log(`queue server: ${QUEUE_SERVER}`);
+    let loc: BasicLocation | undefined = await getLocation();
     if (loc) {
       console.log("location found, sending POST request");
-      let res = await fetch(QUEUE_SERVER ?? "", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-        }),
-      });
-
-      console.log("got response");
-      console.log(res);
-      if (res.status == 200) {
-        let cookie = await res.headers.get("set-cookie");
-        props.navigation.navigate("Main", {
-          cookie,
-          name,
-          loc,
+      let connectionInfo = await getConnectionDetails();
+      console.log(`queue server: ${connectionInfo.queueServer}`);
+      console.log(`socket server: ${connectionInfo.socketServer}`);
+      try {
+        let res = await fetch(connectionInfo.queueServer, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+          }),
         });
-      } else {
-        console.log("non-200 status code");
-        setMsg(await res.text());
+
+        console.log("got response");
+        // console.log(res);
+        if (res.status == 200) {
+          let cookie = await res.headers.get("set-cookie");
+          props.navigation.navigate("Main", {
+            cookie,
+            name,
+            loc,
+            socketServer: connectionInfo.socketServer,
+          });
+        } else {
+          console.log("non-200 status code");
+          setMsg(await res.text());
+        }
+        console.log(res.status);
+      } catch (e) {
+        setMsg("Could not find queue server");
       }
 
       setSpinner(false);
-      console.log(res.status);
     } else {
       console.log("could not get location");
     }
+  };
+
+  const goSettings = async () => {
+    const location = await Location.getLastKnownPositionAsync();
+    console.log("got location");
+    console.log(location);
+    props.navigation.navigate("Settings", { location });
   };
 
   return (
@@ -114,6 +129,9 @@ export default function Home(props: BasePageProps) {
             >
               Search
             </LargeTextButton>
+            <SmallTextButton onPress={goSettings} type="secondary">
+              Settings
+            </SmallTextButton>
           </KeyboardAvoidingView>
         )}
       </SafeAreaView>

@@ -1,5 +1,15 @@
 # GoFindMe Frontend
 
+# CI/CD todo
+
+1. install JDK 17
+2. install android SDK - may need to `chown -R $(whoami) /opt/android-sdk`
+3. accept licenses
+4. install NPM
+5. install EAS CLI
+6. log in to EAS
+7. build
+
 # Developer Setup
 
 Brennan will help you troubleshoot your local setup as long as you use WSL2 or a native Linux installation and [rtx](https://github.com/jdx/rtx) to manage node versions.

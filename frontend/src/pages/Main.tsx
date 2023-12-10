@@ -13,12 +13,13 @@ import {
 } from "react-native";
 import MapView, { Region } from "react-native-maps";
 import useWebSocket from "react-use-websocket";
-import { ThemeContext } from "../Contexts";
+import { ThemeContext } from "../utils/Contexts";
 import BasePageProps from "../common/BasePageProps";
 import { BasicLocation } from "../common/BasicLocation";
 import Map from "../components/Map";
 import style from "../styles/GlobalStyles";
 import SmallTextButton from "../components/SmallTextButton";
+import { getConnectionDetails, getMapType } from "../utils/SettingsProvider";
 
 const SOCKET_SERVER = process.env.EXPO_PUBLIC_SOCKET_SERVER ?? "";
 
@@ -80,7 +81,7 @@ export default function Main(props: BasePageProps) {
     lastJsonMessage,
     readyState,
     getWebSocket,
-  } = useWebSocket(SOCKET_SERVER, {
+  } = useWebSocket(props.route.params.socketServer, {
     onOpen: () => console.log("opened"),
     shouldReconnect: (closeEvent) => true,
     onMessage: (e) => {
@@ -103,11 +104,6 @@ export default function Main(props: BasePageProps) {
           latitude: data.lat,
           longitude: data.long,
         });
-        // chatMessages.push({
-        //   sender: "system",
-        //   message: data.lat + ", " + data.long,
-        // });
-        // setChatMessages(chatMessages);
       } else if (data.type === "chat") {
         setChatMessages([
           ...chatMessages,
@@ -115,6 +111,16 @@ export default function Main(props: BasePageProps) {
             type: "message",
             sender: otherName,
             message: data.msg,
+          },
+        ]);
+      } else if (data.type === "unpaired") {
+        setOtherName("");
+        setOtherLocation(undefined);
+        setChatMessages([
+          {
+            type: "spacer",
+            message: "",
+            sender: "",
           },
         ]);
       }
@@ -216,6 +222,9 @@ export default function Main(props: BasePageProps) {
         </TouchableWithoutFeedback>
         {otherName ? (
           <View style={styles.mainPageChatContainer}>
+            <Text style={{ ...styles.message }}>
+              You're connected to {otherName}
+            </Text>
             <FlatList
               style={styles.mainPageMessageHistory}
               data={chatMessages}
@@ -248,7 +257,12 @@ export default function Main(props: BasePageProps) {
             </View>
           </View>
         ) : (
-          <ActivityIndicator />
+          <View style={styles.mainPageSpinnerContainer}>
+            <ActivityIndicator />
+            <Text style={styles.message}>
+              You're in the queue. You'll be paired with someone shortly!
+            </Text>
+          </View>
         )}
       </KeyboardAvoidingView>
     </View>
